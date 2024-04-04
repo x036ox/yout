@@ -1,0 +1,95 @@
+.search-history {
+    background-color: white;
+    border: 1px solid rgba(220,220,220, 0.8);
+    box-shadow: black;
+    margin-top: 3px;
+    padding-top: 15px;
+    padding-bottom: 7px;
+    border-radius: 15px;
+    visibility: hidden;
+}
+
+
+.active {
+    visibility: visible;
+}
+
+
+
+
+.search-option .search-icon {
+    margin-inline: 16px;
+    width: 21px;
+    padding-top: 0px;
+}
+
+.search-option {
+    display: flex;
+    pointer-events: all;
+    position: relative;
+    height: 30px;
+    cursor: pointer;
+}
+
+.search-option-button{
+    width: 100%;
+    border: none;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+.deleted{
+    margin-left: 53px;
+    color: grey;
+}
+
+.search-option:hover, .search-option-button:hover {
+    background-color: rgb(235, 235, 235);
+}
+
+.delete-search-option-button {
+    position:absolute;
+    right:20px;
+    background-color: white;
+    color: rgb(96, 96, 227);
+    border: none;
+}
+
+.delete-search-option-button:hover
+{text-decoration: underline;
+cursor: pointer;}
+
+.search-option:hover .delete-search-option-button {
+    background-color: rgb(235, 235, 235);
+}
+
+
+.text-clear-button {
+    position: absolute;
+    width:38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 1px;
+    right:1px;
+    background-color: transparent;
+    border: none;
+    border-radius: 30px;
+}
+
+.text-clear-button:hover {
+    background-color: rgb(235, 235, 235);;
+}
+
+.text-clear-button:active {
+    background-color: rgb(215, 215, 215);;
+}
+
+.text-clear-icon {
+    width: 15px;
+}
+

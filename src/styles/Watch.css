@@ -1,0 +1,174 @@
+.watch-page{
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+    padding-right: 150px;
+    padding-left: 40px;
+    padding-block: 20px;
+    column-gap: 40px;
+}
+
+.watch-video-part{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    overflow: hidden;
+}
+
+.watch-video-thumbnail{
+    width: 100%;
+    min-width: 300px;
+    position: relative;
+}
+
+.watch-thumbnail{
+    width: 100%;
+    background-color: black;
+    aspect-ratio: 16/9;
+}
+
+
+.active{
+    visibility: visible;
+}
+
+.watch-video-details{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 18px;
+    width: inherit;
+}
+
+.watch-video-title{
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.watch-video-channel-box{
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+
+    margin-top: 20px;
+}
+
+.watch-video-channel{
+
+    display: flex;
+    align-items: center;
+}
+
+.watch-channel-picture{
+    width:50px;
+    aspect-ratio: 1/1;
+    border-radius: 25px;
+}
+
+.watch-channel-name-box{
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-self: center;
+}
+
+.watch-channel-name{
+    font-weight: 500;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+.watch-subscribe-button{
+    background-color: #e71212;
+    margin-left: 60px;
+    font-size: 16px;
+    font-weight: 500;
+    padding-inline: 20px;
+    border-radius: 30px;
+    border: 1px solid rgb(50,50,50);
+    height: 40px;
+    color: white;
+}
+
+.watch-subscribe-button-active{
+    background-color: lightgreen;
+    color: black;
+}
+
+
+
+.watch-reactions{
+    display: flex;
+    margin-right:20px;
+}
+
+.watch-like-button, .watch-dislike-button{
+    padding-left: 20px;
+    padding-right: 15px;
+    border: none;
+    height: 40px;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.watch-like-button{
+    border-bottom-left-radius: 30px;
+    border-top-left-radius: 30px;
+    border-right: 1px solid rgb(200,200,200);
+}
+
+.watch-like-button-active{
+    background-color: rgba(0, 255, 0, 0.25);
+    border: 1px solid rgba(0, 255, 0, 0.75);
+}
+
+.watch-likes-amount{
+    margin-left: 10px;
+}
+
+.watch-dislike-button{
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+.watch-like-button:hover, .watch-dislike-button:hover{
+    background-color: rgba(230,230,230,0.75);
+}
+
+.watch-like-button:active, .watch-dislike-button:active{
+    background-color: rgba(210,210,210,0.75);
+}
+
+.watch-like-icon{
+    width: 23px;
+    margin-bottom: 3px;
+}
+
+.watch-dislike-icon{
+    width: 23px;
+    margin-right: 3px;
+    margin-top: 2px;
+}
+
+.watch-views {
+    display: inline;
+}
+
+.watch-upload-date{
+    display:inline;
+    margin-left: 2pc;
+}
+
+.watch-description{
+    overflow-wrap: break-word;
+}
+
+
+.watch-recs-part{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

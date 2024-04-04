@@ -1,0 +1,96 @@
+.user-card{
+    border: 1px solid green;
+    display: flex;
+    column-gap: 40px;
+    max-width: 400px;
+    max-height: 100px;
+    padding-inline: 20px;
+    padding-top: 10px;
+    padding-bottom: 7px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.user-card:hover{
+    background-color: rgb(237,237,237);
+}
+
+.left-container{
+    display: grid;
+    grid-template-rows: 2fr 1fr;
+    row-gap: 10px;
+}
+
+
+.user-id-container{
+    justify-self: center;
+}
+
+.user-pic{
+    max-height: 45px;
+    aspect-ratio: 1/1;
+    justify-self: center;
+    border-radius: 25px;
+}
+
+.user-info-container{
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+
+.info-field-div{
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.channel-link{
+    position: absolute;
+    right: 5px;
+    bottom: 2px;
+    visibility: hidden;
+}
+
+.edit-button{
+    position: absolute;
+    right: 5px;
+    top: 4px;
+    visibility: hidden;
+}
+
+.delete-button{
+    position: absolute;
+    right: 7px;
+    top: 24px;
+    visibility: hidden;
+}
+
+.channel-link-img{
+    width: 14px;
+}
+
+.channel-link:hover, .edit-button:hover, .delete-button:hover{
+    cursor: pointer;
+}
+
+.edit-img{
+    width: 20px;
+}
+
+.delete-img{
+    width: 17px;
+}
+
+.user-card:hover .channel-link{
+    visibility: visible;
+}
+
+.user-card:hover .edit-button{
+    visibility: visible;
+}
+
+.user-card:hover .delete-button{
+    visibility: visible;
+}

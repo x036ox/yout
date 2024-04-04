@@ -1,0 +1,333 @@
+.header {
+    display: flex;
+    position: fixed;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: white;
+    left: 0;
+    right: 0;
+    top: 0;
+    height:60px;
+    z-index: 1;
+    padding-inline: 16px 28px;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
+    width: 150px;
+}
+
+.hamburger-button {
+    margin-top: 8px;
+    width: 40px;
+    height:40px;
+    border:none;
+    background-color: white;
+    border-radius: 20px;
+}
+
+.hamburger-button:hover {
+    background-color: rgb(234, 234, 234);
+    cursor: pointer;
+}
+
+.hamburger-icon {
+    width: 24px;
+    margin-top: 4px;
+}
+
+.youtube-logo {
+    height: 100%;
+    cursor: pointer;
+}
+
+.youtube-logo-icon {
+    margin-top: 18px;
+    width: 90px;
+}
+
+
+
+.middle-section {
+    flex: 1;
+    display: flex;
+    max-width:650px;
+    margin-top: 8px;
+    margin-left: 110px;
+    margin-right: 77px;
+}
+
+.searchbar-div {
+    position: relative;
+    flex:1;
+}
+
+.searchbar {
+    width:100%;
+    height: 35px;
+    padding-left:15px ;
+    padding-top: 2px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-style: solid;
+    border-color:rgb(201, 200, 200);
+    border-width: 1px;
+    box-shadow: inset 1px 1px 1px rgba(0, 0, 0,0.075);
+}
+
+.searchbar::placeholder {
+    font-size: 16px;
+}
+
+.searchbar:focus {
+    outline: none;
+    border-color:rgb(53, 125, 172);
+}
+
+.search-button {
+    position: relative;
+    width:64px;
+    margin-left: -3px;
+    height:40px;
+    border-top-right-radius: 19px;
+    border-bottom-right-radius: 19px;
+    border-style: solid;
+    background-color: rgb(248, 248, 248);
+    border-width: 1px;
+    border-color: rgb(201, 200, 200);
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: rgb(240, 240, 240);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.search-button:focus {
+    background-color: rgb(233, 233, 233);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.search-button .tooltip {
+    position: absolute;
+    background-color: rgba(5,5,5,0.6);
+    color: white;
+    margin-top: 22px;
+    font-size: 12px;
+    padding-inline: 10px;
+    padding-block: 8px;
+    opacity:0;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    }
+
+.search-button:hover .tooltip {
+    opacity: 1;
+}
+
+.search-icon {
+    width:24px;
+    padding-top: 4px;
+}
+
+.voice-search-button {
+    position: relative;
+    width:40px;
+    height:40px;
+    margin-left: 7px;
+    border:none;
+    border-radius: 20px;
+    background-color: rgb(248, 248, 248);
+}
+
+.voice-search-button:hover {
+    background-color: rgb(234, 234, 234);
+    cursor: pointer;
+}
+
+.voice-search-button:active {
+    background-color: rgb(220, 220, 220);
+    cursor: pointer;
+}
+
+.voice-search-button .tooltip {
+    position: absolute;
+    background-color: rgba(5,5,5,0.6);
+    color: white;
+    margin-top: 22px;
+    width: 80px;
+    left:-30px;
+    font-size: 12px;
+    padding-inline: 10px;
+    padding-block: 8px;
+    opacity:0;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.voice-search-button:hover .tooltip {
+        opacity: 1;
+    }
+
+.voice-search-icon {
+    padding-top:4px;
+    width:24px;
+    margin-left: 2px;
+}
+
+
+
+
+
+
+.right-section {
+    position: relative;
+    width:fit-content;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-top: -2px;
+}
+
+.upload-button, .admin-button, .info-button{
+    position: relative;
+    width:37px;
+    border:none;
+    background-color: white;
+    border-radius: 19px;
+    height:37px;
+    margin-top: 2px;
+}
+
+.upload-button:hover, .admin-button:hover, .info-button:hover {
+    background-color: rgb(234, 234, 234);
+    cursor: pointer;
+}
+
+.upload-button .tooltip, .admin-button .tooltip, .info-button .tooltip {
+    position: absolute;
+    background-color: rgba(5,5,5,0.6);
+    width: max-content;
+    color: white;
+    margin-top: 22px;
+    left:-8px;
+    font-size: 12px;
+    padding-inline: 10px;
+    padding-block: 8px;
+    opacity:0;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    }
+
+.upload-icon {
+        padding-top:2px;
+        padding-left: 1px;
+        height:24px;
+    }
+
+.admin-icon, .info-icon{
+    width:20px;
+    margin-top: 3px;
+}
+
+
+.upload-button:hover .tooltip ,.admin-button:hover .tooltip, .info-button:hover .tooltip{
+        opacity: 1;
+}
+
+
+
+.notifications-button {
+    position: relative;
+    width:37px;
+    background-color: white;
+    border: none;
+    border-radius: 19px;
+    height:37px;
+}
+
+.notifications-button:hover {
+    background-color: rgb(234, 234, 234);
+    cursor: pointer;
+}
+
+.notifications-icon {
+    margin-top: 4px;
+    width:25px;
+}
+
+.notifications-amount {
+    position: absolute;
+    top:4px;
+    right: -5px;
+    background-color: rgb(216, 0, 0);
+    color:white;
+    padding-inline: 5px;
+    padding-block: 1px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.notifications-button .tooltip {
+    position: absolute;
+    background-color: rgba(5,5,5,0.6);
+    color: white;
+    margin-top: 22px;
+    left:-25px;
+    font-size: 12px;
+    padding-inline: 10px;
+    padding-block: 8px;
+    opacity:0;
+    border-radius: 2px;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    }
+
+.notifications-button:hover .tooltip {
+        opacity: 1;
+    }
+    
+
+.channel-button {
+    position: relative;
+    margin-top: 5px;
+    width:32px;
+    height:32px;
+    background-color: white;
+    border: none;
+    border-radius: 19px;
+}
+
+
+
+.channel-button:hover {
+    cursor: pointer;
+}
+
+.no-channel-button{
+    border-color: pink;
+    border-radius: 4px;
+    padding-inline: 10px;
+    padding-block: 5px;
+    border-style: solid;
+    background-color: lightblue;
+}
+
+.no-channel-button:hover{
+    cursor: pointer;
+}
+
+
+.channel-picture {
+    width:32px;
+    height:32px;
+    margin-left: -6px;
+    border-radius: 19px;
+}

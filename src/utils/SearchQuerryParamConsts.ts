@@ -1,0 +1,5 @@
+export const PARAM_VIDEO_ID = "videoId"
+export const PARAM_USER_ID = "userId"
+export const Q_PARAM_PARAM_VIDEO_ID = "?" + PARAM_VIDEO_ID + "="
+export const Q_PARAM_USER_ID = "?" + PARAM_USER_ID + "="
+export const Q_PARAM_SEARCH_QUERRY = "?search_query="

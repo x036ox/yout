@@ -1,0 +1,47 @@
+.video-edit-page{
+    display: flex;
+    height: 90vh;
+    justify-content: center;
+    padding-top: 10vh;
+}
+
+.video{
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.description, .duration, .title{
+    display: flex;
+}
+
+.video-thumbnail{
+    aspect-ratio: 16/9;
+}
+
+.duration-input, .title-input, .description-input{
+    border:1px solid rgb(200,200,200);
+    font-family: Roboto, Arial;
+    font-size: 15px;
+    margin-left: 4px;
+    flex-grow: 1;
+}
+
+.duration-input:focus, .title-input:focus, .description-input:focus{
+    outline-color: darkseagreen;
+}
+
+.description-input{
+    height: 110px;
+    resize: none;
+}
+
+.save-link{
+    width: 100px;
+    align-self: center;
+}
+
+.save-button{
+    width: 100%;
+}

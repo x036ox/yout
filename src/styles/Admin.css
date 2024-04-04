@@ -1,0 +1,114 @@
+
+.input{
+    height: 100px;
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.user-tab-button, .video-tab-button{
+    border: 1px solid rgb(200, 200, 200);
+    border-top:none;
+    border-left: none;
+    width: 150px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.user-tab-button:hover, .video-tab-button:hover{
+    background-color: rgb(236, 236, 236);
+}
+
+.user-tab-button:active, .video-tab-button:active{
+    background-color: rgb(220, 220, 220);
+}
+
+.button-active{
+    background-color: rgb(236, 236, 236);
+}
+
+.users-tab, .videos-tab{
+    position: relative;
+    display: flex;
+    row-gap: 5px;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.add-button{
+    position: absolute;
+    right: 25px;
+    width: max-content;
+    padding-inline:12px;
+    height: 25px;
+}
+
+.add-button-spinner{
+    width: 45px;
+    right: 40px;
+    position: absolute;
+    
+}
+
+.radiobox{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 500px;
+    height: 40px;
+}
+
+.value-input{
+    width: 93%;
+}
+
+.radiobox-value{
+    align-self: center;
+}
+
+.input-end, .input-start{
+    display: inline;
+    width: 45%;
+    height: 34px;
+    min-width: 20%;;
+}
+
+.filter-button{
+    position: relative;
+}
+
+.admin-search-button{
+    width: 80px;
+    height: 30px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.admin-search-icon{
+    width: 25px;
+}
+
+.page-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    row-gap: 20px;
+    column-gap: 30px;
+}
+
+@media (max-width:1100px) {
+    .page-grid{
+    grid-template-columns: 1fr 1fr 1fr;
+}
+}
+
+@media (max-width:800px) {
+    .page-grid{
+    grid-template-columns: 1fr 1fr;
+}
+}
+
+@media (max-width:550px) {
+    .page-grid{
+    grid-template-columns: 1fr;
+}
+}
