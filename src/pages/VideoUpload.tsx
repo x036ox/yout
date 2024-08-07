@@ -4,20 +4,20 @@ import {useNavigate} from "react-router-dom";
 import {sendNewVideo} from "../http-requests/PostRequests";
 import {Context} from "../index";
 import Video from "../model/Video";
-import {User} from "../model/User";
 import "../styles/VideoUpload.css"
 import {TimePicker} from "antd";
 import dayjs, {Dayjs} from "dayjs";
 import {observer} from "mobx-react";
 import { Form } from "react-bootstrap";
 import Spinner from "../components/Spinner";
+import { useAuth } from "react-oidc-context";
+import { User } from "oidc-client-ts";
 
 
 
 const VideoUpload = observer(() =>{
 
-    const userService = useContext(Context).userService;
-
+    const auth = useAuth();
 
     const titleInput = useInput("");
     const descriptionInput = useInput("")
@@ -41,11 +41,11 @@ const VideoUpload = observer(() =>{
     
 
     useEffect(() => {
-        if(userService.isAuth !== undefined && !userService.isAuth){
+        if(!auth.isAuthenticated){
             alert("Should be authorized to upload video");
            window.location.href = "/";
         }
-    }, [userService.isAuth]);
+    }, [auth]);
 
     useEffect(() =>{
         if(imageFiles !== null ){
@@ -57,8 +57,8 @@ const VideoUpload = observer(() =>{
     }, [imageFiles])
 
 
-    async function createOnClick(mainUser:User | null){
-        if(mainUser !== null){
+    async function createOnClick(mainUser:User | null | undefined){
+        if(mainUser){
             if(titleInput.value.length > 0 && descriptionInput.value.length > 0 && imageFiles !== null && videoFiles !== null && categorySelect.current !== null){
                 if(!imageFiles[0] && !videoFiles[0]){
                     alert("You have to upload video and thumbnail");
@@ -111,7 +111,7 @@ const VideoUpload = observer(() =>{
                 </div>
 
 
-                <button className={"save-button"} onClick={() => userService.isAuth  && createOnClick(userService.mainUser)}>
+                <button className={"save-button"} onClick={() => createOnClick(auth.user)}>
                     Create
                 </button>
 

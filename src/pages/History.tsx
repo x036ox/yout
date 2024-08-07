@@ -8,20 +8,21 @@ import { observer } from "mobx-react";
 import "../styles/History.css"
 import NotFound from "../components/NotFound";
 import Spinner from "../components/Spinner";
+import { useAuth } from "react-oidc-context";
 
 const History = observer(() =>{
     const urlParam = new URLSearchParams(window.location.search);
-    const user = useContext(Context).userService.mainUser;
+    const auth = useAuth();
     const [videos, setVideos] = useState<Video[] | null | undefined>();
 
     useEffect(() =>{
         const userId = urlParam.get(PARAM_USER_ID);
         if(userId){
             getWatchHistory(userId).then(setVideos);
-        }else if(user){
-            getWatchHistory(user.id.toString()).then(setVideos);
+        }else if(auth.user){
+            getWatchHistory(auth.user.profile.sub).then(setVideos);
         }
-    },[user])
+    },[auth.user])
 
     if(videos === undefined){
         return(
@@ -34,10 +35,10 @@ const History = observer(() =>{
     }
 
     return(
-        <div className="history-page">
+        <div className="all-videos-grid">
             {
                 videos?.map(video =>
-                    <VideoBox video={video} user={user}/>
+                    <VideoBox video={video}/>
                     )
             }
         </div>

@@ -4,13 +4,12 @@ import {
     checkUserSubscribedChannel,
     getUserById,
     getVideoById,
-    getVideos,
+    getRecommendations,
     watchVideoById
 } from "../http-requests/GetRequests";
 import Video from "../model/Video";
 import VideoBox from "../components/VideoBox";
 import "../styles/Watch.css"
-import {User} from "../model/User";
 import {
     sendSubscribeChannel,
     sendUnsubscribeChannel
@@ -27,20 +26,23 @@ import { sendDislikeToVideo } from "../http-requests/DeleteRequests";
 import Hls from "hls.js";
 import Spinner from "../components/Spinner";
 import NotFound from "../components/NotFound";
+import { useAuth } from "react-oidc-context";
+import { UserProfile } from "oidc-client-ts";
+import { YoutUserProfile } from "../model/YoutUserProfile";
 
 const Watch = observer(() =>{
     const REQ_VIDEOS_SIZE = 30;
-
-    const mainUser = useContext(Context).userService.mainUser;
+    const auth = useAuth();
+    const mainUser: UserProfile | undefined = auth.user?.profile;
     const navigate = useNavigate();
     const hls = new Hls();
 
     const videoId: string | null = new URLSearchParams(window.location.search).get("videoId");
     const [video, setVideo] = useState<Video | null | undefined>(undefined);
     const [recommendations, setRecommendations] = useState<Video[] | null | undefined>(undefined);
-    const [channel, setChannel] = useState<User | null | undefined>(undefined)
+    const [channel, setChannel] = useState<YoutUserProfile | null | undefined>(undefined)
     const [hasUserLikedVideo, setHasUserLikedVideo] = useState<boolean | undefined>(undefined);
-    const [hasUserSubscribed, setHasUserSubscribed] = useState<boolean | undefined>(true);
+    const [hasUserSubscribed, setHasUserSubscribed] = useState<boolean | undefined>(undefined);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isSameChannel, setSameChannel] = useState<boolean>(false);
 
@@ -66,23 +68,24 @@ const Watch = observer(() =>{
                     })
                 } else setVideo(null);
             });
-            getVideos(0, REQ_VIDEOS_SIZE).then(setRecommendations);
+            getRecommendations(0, REQ_VIDEOS_SIZE, null).then(setRecommendations);
         }
     }, []);
 
     useEffect(() => {
-        if(mainUser !== null && videoId !== null){
-            checkUserLikedVideo(mainUser.id.toString(), videoId).then(setHasUserLikedVideo);
+        if(auth.user && videoId){
+            checkUserLikedVideo(auth.user.profile.sub, videoId).then(setHasUserLikedVideo);
         } else {
             setHasUserLikedVideo(false);
         }
-    }, [mainUser]);
+    }, [auth.user]);
 
 
 
     useEffect(() => {
-        if(mainUser !== null && channel !== null && channel !== undefined){
-            checkUserSubscribedChannel(mainUser.id.toString(), channel.id.toString()).then(setHasUserSubscribed);
+        if(mainUser&& channel){
+            console.log(channel)
+            checkUserSubscribedChannel(mainUser.sub, channel.id).then(setHasUserSubscribed);
             if(channel.id === mainUser.id){
                 setSameChannel(true);
             }
@@ -112,9 +115,9 @@ const Watch = observer(() =>{
     //     )
     // }
 
-    function likeVideo(video: Video, mainUser:User|null){
-        if(mainUser !== null){
-            sendLikeToVideo(mainUser.id.toString(), video.id.toString());
+    function likeVideo(video: Video, mainUser:UserProfile|undefined){
+        if(mainUser){
+            sendLikeToVideo(mainUser.sub, video.id.toString());
         }
         if(hasUserLikedVideo){
             //if user already liked this video, we`re removing his like
@@ -127,23 +130,23 @@ const Watch = observer(() =>{
         }
     }
 
-    function dislikeVideo(video: Video, mainUser:User|null){
-        if(mainUser !== null){
-            sendDislikeToVideo(mainUser.id.toString(), video.id.toString());
+    function dislikeVideo(video: Video, mainUser:UserProfile|undefined){
+        if(mainUser){
+            sendDislikeToVideo(mainUser.sub, video.id.toString());
             setHasUserLikedVideo(false)
             video.likes -= 1;
         }
     }
 
-    function subscribeOnClick(mainUser:User|null, channel: User|null){
-        if(mainUser !== null && channel !== null){
+    function subscribeOnClick(mainUser:UserProfile|undefined, channel: YoutUserProfile|undefined){
+        if(mainUser && channel){
             if(hasUserSubscribed){
                 //unsubscribing
-                sendUnsubscribeChannel(mainUser.id.toString(), channel.id.toString());
+                sendUnsubscribeChannel(mainUser.sub, channel.id);
                 setHasUserSubscribed(false);
             }
             else {
-                sendSubscribeChannel(mainUser.id.toString(), channel.id.toString());
+                sendSubscribeChannel(mainUser.sub, channel.id);
                 setHasUserSubscribed(true);
             }
         }
@@ -175,7 +178,7 @@ const Watch = observer(() =>{
                             </div>
                         </div>
                         {
-                            !isSameChannel &&
+                            !isSameChannel && hasUserSubscribed != undefined &&
                             <button className={subscribeButtonClassName} onClick={() => channel && subscribeOnClick(mainUser, channel)}>
                                 {hasUserSubscribed ? "You subscribed" : "Subscribe"}
                             </button>
@@ -210,7 +213,7 @@ const Watch = observer(() =>{
                 {recommendations?.map(rec =>
                     {
                         if(rec.id !== video?.id)
-                            return <VideoBox video={rec} user={mainUser} key={video?.id}/>
+                            return <VideoBox video={rec} isRecommendation={true} key={video?.id}/>
                     }
                 )}
             </div>

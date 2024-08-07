@@ -1,21 +1,20 @@
 import React, {forwardRef, useContext, useEffect} from "react";
 import "../../styles/ChannelDropdown.css"
-import {User} from "../../model/User";
 import {useNavigate} from "react-router-dom";
-import {CHANNEL_ROUTE, LOGIN_ROUTE, USER_HISTORY_ROUTE, VIDEO_UPLOAD_ROUTE} from "../../utils/RoutesConsts";
+import {CHANNEL_ROUTE, USER_HISTORY_ROUTE, VIDEO_UPLOAD_ROUTE} from "../../utils/RoutesConsts";
 import {Q_PARAM_USER_ID} from "../../utils/SearchQuerryParamConsts";
 import {LOCAL_STORAGE_USER} from "../../utils/Consts";
 import {Context} from "../../index";
+import { useAuth } from "react-oidc-context";
 
 interface ChannelDropdownProps{
     visible:boolean;
-    mainUser:User | null
     setVisible: any
 }
 
-const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, mainUser, setVisible}) =>{
-    const userService = useContext(Context).userService;
+const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, setVisible}) =>{
     const navigate = useNavigate();
+    const auth = useAuth();
     let rootClasses = "channel-dropdown";
 
     if(visible)
@@ -28,22 +27,27 @@ const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, mainUser, setV
         setVisible(false);
     }
 
+    function authorizationOnClick(){
+        auth.signinRedirect();
+        buttonOnClick(null);
+    }
+
 
 
 
     return (
         <div className={rootClasses} onMouseDown={(e) => e.preventDefault()} >
             <div className="channel-header">
-                <img className="channel-picture" src={mainUser?.picture} />
+                <img className="channel-picture" src={auth.user?.profile.picture} />
                 <div className = "channel-info">
-                    <div className="channel-name">{mainUser?.username}</div>
-                    <div className="channel-tag">id: {mainUser?.id}</div>
+                    <div className="channel-name">{auth.user?.profile.nickname}</div>
+                    <div className="channel-tag">id: {auth.user?.profile.sub}</div>
                     <a className="account-control-link">Google account Control</a>
                 </div>
             </div>
             <div className="dropdown-options">
                 <div>
-                    <button className="my-channel-button" onClick={() => buttonOnClick(CHANNEL_ROUTE + Q_PARAM_USER_ID + mainUser?.id)}>
+                    <button className="my-channel-button" onClick={() => buttonOnClick(CHANNEL_ROUTE + Q_PARAM_USER_ID + auth.user?.profile.sub)}>
                         My channel
                     </button>
                     <button className="creative-studio" onClick={() => buttonOnClick(VIDEO_UPLOAD_ROUTE)}>
@@ -53,14 +57,15 @@ const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, mainUser, setV
                         My history
                     </button>
                     <button className="change-account" onClick={() => {
-                        userService.logout();
-                        buttonOnClick(LOGIN_ROUTE)
+                        auth.signoutSilent();
+                        authorizationOnClick()
                     }}>
                         Change account
                     </button>
                     <button className="sign-out" onClick={() => {
                         buttonOnClick("");
-                        userService.logout();
+                        auth.signoutSilent();
+                        // userService.logout();
                     }}>
                         Sign out
                     </button>

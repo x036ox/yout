@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {User} from "../model/User";
-import {getAllUserVideosSorted, getAllVideosSorted, getUserById} from "../http-requests/GetRequests";
+import {getAllUserVideosSorted, getUserById} from "../http-requests/GetRequests";
 import FilterBar, {Sort} from "../components/FilterBar";
 import "../styles/Videos.css"
 import VideoBox from "../components/VideoBox";
@@ -51,7 +50,7 @@ const Channel = ()=> {
             <div className={"all-videos-grid"}>
                 {
                     videos.map((video) =>
-                        <VideoBox video={video} user ={null}/>
+                        <VideoBox video={video}/>
                     )
                 }
             </div>

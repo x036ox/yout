@@ -2,19 +2,16 @@ import {
     ADMIN_ROUTE,
     CHANNEL_ROUTE,
     EMAIL_CONFIRMATOIN_ROUTE,
-    LOGIN_ROUTE,
-    REGISTRATION_ROUTE,
     VIDEO_EDIT_ROUTE,
     VIDEO_UPLOAD_ROUTE, VIDEO_SEARCH_ROUTE, WATCH_ROUTE, USER_EDIT_ROUTE, USER_HISTORY_ROUTE,
     USER_LIKES_ROUTE,
     USER_SUBSCRIBES_ROUTE
 } from "./utils/RoutesConsts";
-import React, {ReactNode} from "react";
+import React, {Component, ReactNode} from "react";
 import MainPage from "./pages/MainPage";
 import VideoEdit from "./pages/VideoEdit";
 import VideoUpload from "./pages/VideoUpload";
 import VideoSearch from "./pages/VideoSearch";
-import Authorization from "./pages/Authorization";
 import Channel from "./pages/Channel";
 import Watch from "./pages/Watch";
 import Confirmation from "./pages/Confirmation";
@@ -41,12 +38,6 @@ export const publicRoutes = [
     {
         path:"",
         Component: <MainPage/>
-    },{
-        path:LOGIN_ROUTE,
-        Component: <Authorization/>
-    },{
-        path:REGISTRATION_ROUTE,
-        Component: <Authorization/>
     },{
         path:VIDEO_EDIT_ROUTE,
         Component: <VideoEdit/>

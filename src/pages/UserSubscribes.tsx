@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { User } from "../model/User";
 import { getUserSubscribes } from "../http-requests/GetRequests";
 import { Context } from "..";
 import Spinner from "../components/Spinner";
@@ -7,21 +6,23 @@ import NotFound from "../components/NotFound";
 import UserCard from "../components/UserCard";
 import { observer } from "mobx-react";
 import "../styles/UserSubscribes.css"
+import { useAuth } from "react-oidc-context";
+import { YoutUserProfile } from "../model/YoutUserProfile";
 
 const UserSubscribes = observer(() =>{
 
-    const [users, setUsers] = useState<User[] | null | undefined>();
-    const userService = useContext(Context).userService;
+    const [users, setUsers] = useState<YoutUserProfile[] | null | undefined>();
+    const auth = useAuth();
 
     useEffect(() =>{
-        if(userService.isAuth !== undefined && userService.isAuth === false){
+        if(!auth.isAuthenticated){
             alert("Should be authorized");
             window.location.href = "/";
         }
-        if(userService.mainUser){
-            getUserSubscribes(userService.mainUser.id.toString()).then(setUsers);
+        if(auth.user){
+            getUserSubscribes(auth.user.profile.sub).then(setUsers);
         }
-    },[userService.isAuth])
+    },[auth.user])
 
 
     return(

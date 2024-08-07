@@ -1,6 +1,4 @@
 export const ADMIN_ROUTE = '/admin'
-export const LOGIN_ROUTE = '/login'
-export const REGISTRATION_ROUTE = '/registration'
 export const WATCH_ROUTE = '/watch'
 export const VIDEO_EDIT_ROUTE = '/edit'
 export const VIDEO_UPLOAD_ROUTE = '/upload'

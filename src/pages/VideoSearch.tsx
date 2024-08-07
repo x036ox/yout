@@ -34,7 +34,7 @@ const VideoSearch = observer(() =>{
         <div className="all-videos-grid">
             {
                 videos?.map((video) =>
-                <VideoBox video={video} user={null}/>)
+                <VideoBox video={video}/>)
             }    
         </div>
     )

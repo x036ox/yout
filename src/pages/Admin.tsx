@@ -3,13 +3,14 @@ import { Context } from "..";
 import { useNavigate } from "react-router-dom";
 import "../styles/Admin.css"
 import { getAllUsers, getAllVideos } from "../http-requests/GetRequests";
-import { User } from "../model/User";
 import Video from "../model/Video";
 import UserCard from "../components/UserCard";
 import VideoBox from "../components/VideoBox";
 import { addUsers, addVideos } from "../http-requests/PostRequests";
 import Spinner  from "../components/Spinner";
 import NotFound from "../components/NotFound";
+import { useAuth } from "react-oidc-context";
+import { YoutUserProfile } from "../model/YoutUserProfile";
 
 enum Tabs{
     VIDEOS,
@@ -37,20 +38,22 @@ enum VideoOptions{
 }
 
 export const Admin = () => {
-    const user = useContext(Context).userService.mainUser;
+    const auth = useAuth();
     const navigate = useNavigate();
-    const isAdmin = user?.isAdmin;
 
     const [currentTab, setCurrentTab] = useState<Tabs>(Tabs.USERS);
-    const [users, setUsers] = useState<User[] | null | undefined>(undefined);
+    const [users, setUsers] = useState<YoutUserProfile[] | null | undefined>(undefined);
     const [videos, setVideos] = useState<Video[] | null | undefined>(undefined);
     const [addVideosButtonPressed, setAddVideosButtonPressed] = useState<boolean>(false);
     const [addUsersButtonPressed, setAddUsersButtonPressed] = useState<boolean>(false);
     const [isContentLoading, setIsContentLoading] = useState<boolean>(false);
-
-    if(!isAdmin){
-        navigate('/');
-    }
+    
+    useEffect(() => {
+        const authorities :any= auth.user?.profile.authorities;
+        if(auth.user && !authorities.split(",").includes("ROLE_ADMIN")){
+            navigate("/");
+        }
+    },[auth.user])
 
     function onChange(event:any){
         const value = event.target.value;
@@ -109,21 +112,21 @@ export const Admin = () => {
       values.splice(0, values.length); 
       }
 
-      function deleteUser(user:User){
+      function deleteUser(user:YoutUserProfile){
         setUsers(users?.filter(u => u.id !== user.id));
       }
 
       async function addUsersOnClick(event:any){
         setAddUsersButtonPressed(true);
         event.target.disabled = true;
-        addUsers("10").then(() => setAddUsersButtonPressed(false));
+        addUsers("5").then(() => setAddUsersButtonPressed(false));
         event.target.disabled = false;
       }
       
       async function addVieosOnClick(event :any){
         setAddVideosButtonPressed(true);
         event.target.disabled = true;
-        await addVideos("5").then(() => setAddVideosButtonPressed(false));
+        await addVideos("2").then(() => setAddVideosButtonPressed(false));
         event.target.disabled = false;
       }
 
@@ -146,7 +149,7 @@ export const Admin = () => {
                 currentTab === Tabs.USERS &&
                 <div className="users-tab">
                     <button className="add-button" onClick={addUsersOnClick}>
-                        Add 10 users
+                        Add 5 users
                     </button>
                     {addUsersButtonPressed &&
                         <Spinner className={"add-button-spinner"}/>
@@ -206,7 +209,7 @@ export const Admin = () => {
                 currentTab === Tabs.VIDEOS &&
                 <div className="videos-tab">
                     <button className="add-button" onClick={addVieosOnClick}>
-                        Add 5 videos
+                        Add 2 videos
                     </button>
                     {
                         addVideosButtonPressed && 
@@ -260,7 +263,7 @@ export const Admin = () => {
                         <div className="page-grid">
                         {
                             videos?.map(video =>
-                                <VideoBox video={video} user={user}/>
+                                <VideoBox video={video}/>
                             )
                         }
                     </div>

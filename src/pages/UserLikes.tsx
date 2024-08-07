@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../styles/UserLikes.css"
 import { Context } from "..";
-import { User } from "../model/User";
 import { getUserLikes, getUserSubscribes } from "../http-requests/GetRequests";
 import VideoBox from "../components/VideoBox";
 import Spinner from "../components/Spinner";
@@ -9,19 +8,20 @@ import NotFound from "../components/NotFound";
 import Video from "../model/Video";
 import { observer } from "mobx-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
 
 const UserLikes = observer(() =>{
-    const userService = useContext(Context).userService;
+    const auth = useAuth();
     const [videos, setVideos] = useState<Video[] | null | undefined>();
 
     useEffect(() =>{
-        if(userService.isAuth !== undefined && userService.isAuth === false){
+        if(!auth.isAuthenticated){
             alert("Should be authorized");
             window.location.href = "/";
-        } else if(userService.mainUser && userService?.mainUser){
-            getUserLikes(userService?.mainUser.id.toString()).then(setVideos);
+        } else if(auth.user){
+            getUserLikes(auth.user.profile.sub).then(setVideos);
         }
-    },[userService.isAuth])
+    },[auth])
 
     
     return(
@@ -32,7 +32,7 @@ const UserLikes = observer(() =>{
                 videos === null ?
                 <NotFound/> :
                 videos.map(video =>
-                    <VideoBox video={video} user={null}/> 
+                    <VideoBox video={video}/> 
                 )
             }
         </div>

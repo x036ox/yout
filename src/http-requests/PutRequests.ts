@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import Video, { NewVideo } from "../model/Video";
 import {
     URL_DISLIKE_VIDEO_BY_ID,
@@ -46,25 +46,13 @@ export async function sendUpdateVideo(videoId:string, title:string|null, categor
 export async function sendSubscribeChannel(userId:string, channelId:string){
     const url = URL_SUBSCRIBE_CHANNEL_BY_ID + userId + "&channelId=" + channelId;
 
-    await fetch(url, {
-        method:"PUT",
-        headers:{
-            "Content-type":"application/json"
-        },
-        body:null
-    }).catch(console.error);
+    await axiosInstance.put(url).catch(console.error);
 }
 
 export async function sendUnsubscribeChannel(userId:string, channelId:string){
     const url = URL_UNSUBSCRIBE_CHANNEL_BY_ID + userId + "&channelId=" + channelId;
 
-    await fetch(url, {
-        method:"PUT",
-        headers:{
-            "Content-type":"application/json"
-        },
-        body:null
-    }).catch(console.error);
+    await axiosInstance.put(url).catch(console.error);
 }
 
 export async function updateUser(id:string, picture:File | null, username:string | null){
@@ -77,11 +65,8 @@ export async function updateUser(id:string, picture:File | null, username:string
         formData.append("username", username);
     }
 
-    return await fetch(url, {
-        method: "PUT",
-        body:formData
-    }).then(response => {
-        if(response.ok) return true;
+    return await axios.put(url, formData).then(response => {
+        if(response.status === HttpStatusCode.Ok) return true;
         return false;
     })   
 }

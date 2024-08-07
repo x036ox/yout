@@ -1,36 +1,27 @@
+import { HttpStatusCode } from "axios";
+import { axiosInstance } from "../App";
 import { LOCAL_STORAGE_ACCESS_TOKEN } from "../utils/Consts";
 import {URL_DELETE_SEARCH_OPTION, URL_DELETE_USER_BY_ID, URL_DELETE_VIDEO_BY_ID, URL_DISLIKE_VIDEO_BY_ID, URL_LOGOUT} from "../utils/ServerUrlConsts";
 
 export async function deleteSearchOption(searchOptionValue:string){
-    const url:string = URL_DELETE_SEARCH_OPTION;
+    const url = URL_DELETE_SEARCH_OPTION;
+    url.searchParams.set("searchOptionValue", searchOptionValue);
 
-    fetch(url, {
-        method: "DELETE",
-        headers:{
-            "Content-type":"application/json",
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        },
-        body: JSON.stringify(searchOptionValue)
-    }).then(response => response.json())
+    axiosInstance.delete(url.toString()).then(response => response.data)
 }
 
 export async function logout(){
-    fetch(URL_LOGOUT,{
-        method:"DELETE",
-        credentials:"include"
-    });
+    // fetch(URL_LOGOUT,{
+    //     method:"DELETE",
+    //     credentials:"include"
+    // });
+    //TODO: consider logout request
 }
 
 export async function sendDislikeToVideo( userId:string,videoId:string){
     const url = URL_DISLIKE_VIDEO_BY_ID + videoId + "&userId=" + userId;
 
-    await fetch(url, {
-        method:"DELETE",
-        headers:{
-            "Content-type":"application/json"
-        },
-        body:null
-    }).catch(console.error);
+    await axiosInstance.delete(url).catch(console.error);
 
 }
 
@@ -38,13 +29,7 @@ export async function sendDislikeToVideo( userId:string,videoId:string){
 export async function deleteVideo(videoId:string){
     const url = URL_DELETE_VIDEO_BY_ID + videoId;
 
-    fetch(url, {
-        method: "DELETE",
-        headers:{
-            "Content-type":"application/json"
-        },
-        body: null
-    })
+    axiosInstance.delete(url).catch(console.error);
 
 
 }
@@ -52,10 +37,8 @@ export async function deleteVideo(videoId:string){
 export async function deleteUser(id:string){
     const url = URL_DELETE_USER_BY_ID + id;
 
-    return await fetch(url, {
-        method: "DELETE"
-    }).then(response => {
-        if(response.ok) return true;
+    return await axiosInstance.delete(url).then(response => {
+        if(response.status === HttpStatusCode.Ok) return true;
         return false;
     })   
 }

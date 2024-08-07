@@ -1,28 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {deleteSearchOption} from "../../http-requests/DeleteRequests";
-import {User} from "../../model/User";
 import {observer} from "mobx-react";
 import "../../styles/SearchHistory.css"
 import { VIDEO_SEARCH_ROUTE } from "../../utils/RoutesConsts";
 import { Q_PARAM_SEARCH_QUERRY } from "../../utils/SearchQuerryParamConsts";
 import { useNavigate } from "react-router-dom";
+import { YoutUserProfile } from "../../model/YoutUserProfile";
+import { useAuth } from "react-oidc-context";
+import { getUserSearchHistory } from "../../http-requests/GetRequests";
+import { SearchOption } from "../../model/SearchOption";
 
 interface SearchHistoryProps{
     searchbar:any;
+    searchHistory:SearchOption[]
     className:string;
-    mainUser:User | null;
 }
 
-const SearchHistory :React.FC<SearchHistoryProps>= observer(({searchbar, className, mainUser}) =>{
+const SearchHistory :React.FC<SearchHistoryProps>= observer(({searchbar,searchHistory, className}) =>{
     const navigate = useNavigate();
+    const auth = useAuth();
 
+    if(!auth.user) return null;
 
-    if(mainUser === null || mainUser.searchHistory.length === 0) return null;
+    
 
     return(
         <div className={className}>
             {
-                mainUser.searchHistory.map((search, index) =>{
+                searchHistory.map((search, index) =>{
                     return(
                         <div key={new Date().getDate() / index + 1 }  >
                             {
@@ -41,7 +46,7 @@ const SearchHistory :React.FC<SearchHistoryProps>= observer(({searchbar, classNa
                                                   {
                                                       e.preventDefault();
                                                       deleteSearchOption(search.value)
-                                                      mainUser.searchHistory.slice(mainUser.searchHistory.indexOf(search), 1)
+                                                      searchHistory.slice(searchHistory.indexOf(search), 1)
                                                       search.deleted = true;
                                                   }
                                                   }>

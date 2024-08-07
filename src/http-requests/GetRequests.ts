@@ -1,10 +1,8 @@
 import Video from "../model/Video";
-import {User} from "../model/User";
 import {
     URL_CHECK_HAD_USER_LIKED, URL_CHECK_USER_SUBSCRIBED_CHANNEL_BY_ID, URL_CONFIRM_EMAIL, URL_GET_ALL_USERS, URL_GET_ALL_USER_VIDEOS,
     URL_GET_ALL_VIDEOS,
-    URL_GET_ALL_VIDEOS_BY_OPTION,
-    URL_GET_USER_BY_ID, URL_GET_VIDEO_BY_ID, URL_GET_WATCH_HISTORY, URL_LIKE_VIDEO_BY_ID, URL_SEARCH_VIDEO, URL_USER_LIKES, URL_USER_SUBSCRIBES, URL_VALIDATE_USER_BY_TOKEN, URL_WATCH_VIDEO_BY_ID
+    URL_GET_ALL_VIDEOS_BY_OPTION, URL_GET_RECOMMENDATIONS, URL_GET_USER_SEARCH_HISTORY, URL_GET_VIDEO_BY_ID, URL_GET_WATCH_HISTORY, URL_LIKE_VIDEO_BY_ID, URL_SEARCH_VIDEO, URL_USER_INFO, URL_USER_LIKES, URL_USER_SUBSCRIBES, URL_VALIDATE_USER_BY_TOKEN, URL_WATCH_VIDEO_BY_ID
 } from "../utils/ServerUrlConsts";
 import { LOCAL_STORAGE_ACCESS_TOKEN } from "../utils/Consts";
 import { AxiosError, HttpStatusCode } from "axios";
@@ -12,79 +10,17 @@ import axios from "axios";
 import qs from "qs";
 import { useContext } from "react";
 import { axiosInstance } from "../App";
+import { YoutUserProfile } from "../model/YoutUserProfile";
+import { SearchOption } from "../model/SearchOption";
+import { error } from "console";
 
-
-export async function validateUserByToken():Promise<any>{
-
-    const url =  URL_VALIDATE_USER_BY_TOKEN;
-    const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN);
-
-    // return axiosInstance.get(url, {
-    //     withCredentials:true
-    // }).then(response => {
-    //     if(response.status === HttpStatusCode.Ok){
-    //         const accessToken = response.headers["accesstoken"];
-    //         if(accessToken){
-    //             localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, accessToken);
-    //         }
-    //         return response.data;
-    //     }
-    //     else   {
-    //         return null;
-    //     }
-    // })
-    // .then(data => {
-    //     if(data === null){
-    //         return null;
-    //     }
-    //     else{
-    //         return User.toUser(data);
-    //     }
-    // })
-    //  .catch(error => {
-    //      console.error(error);
-    //      return null;
-    //  })
-    
-     return await fetch(url,{
-        credentials:"include"
-     })
-        .then(response => {
-            if(response.ok){
-                const accessToken = response.headers.get("accessToken");
-                if(accessToken !== null && accessToken.length > 0){
-                    localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, accessToken);
-                }
-                return response.json()
-            }
-            else   {
-                return null;
-            }
-        })
-        .then(data => {
-            if(data === null){
-                return null;
-            }
-            else{
-                return User.toUser(data);
-            }
-        })
-         .catch(error => {
-             console.error(error);
-             return null;
-         })
-}
 
 export async function getWatchHistory(userId:string){
     const url = URL_GET_WATCH_HISTORY + userId;
-    
-    return await fetch(url, {
-        headers:{
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        }
-    }).then(response => {
-        if(response.ok){
-            return response.json();
+
+    return await axiosInstance.get(url).then(response => {
+        if(response.status == HttpStatusCode.Ok){
+            return response.data;
         }
         return null;
     }).then(data =>{
@@ -100,9 +36,9 @@ export async function getWatchHistory(userId:string){
 
 export async function searchVideos(param:string) : Promise<Video[] | null>{
     const url = URL_SEARCH_VIDEO + param;
-    return await fetch(url).then(response => {
+    return await axiosInstance.get(url).then(response => {
         if(response.status === HttpStatusCode.Ok){
-            return response.json();
+            return response.data;
         } 
         return null;
     }) .then(data => {
@@ -122,7 +58,7 @@ export async function searchVideos(param:string) : Promise<Video[] | null>{
 
 
 export async function confirmEmail(param:string){
-    return await fetch(URL_CONFIRM_EMAIL + param)
+    return await axios.get(URL_CONFIRM_EMAIL + param)
         .then(response => {
             if(response.status === HttpStatusCode.Ok){
                 return true;
@@ -131,18 +67,17 @@ export async function confirmEmail(param:string){
         });
 }
 
-export async function getVideos(page: number, size:number):Promise<Video[] | null | undefined> {
+export async function getRecommendations(page: number, size:number, sortOption: number | null | undefined):Promise<Video[] | null | undefined> {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN);
-    let url = URL_GET_ALL_VIDEOS;
-    return await axiosInstance.get(url, {
-        params: {
-            page: page,
-            size: size.toString()
-        },
-        paramsSerializer: params => qs.stringify(params, {arrayFormat: "repeat"}),
+    const url = URL_GET_RECOMMENDATIONS;
+    url.searchParams.set("page", page.toString());
+    url.searchParams.set("size", size.toString());
+    if(sortOption){
+        url.searchParams.set("sortOption", sortOption.toString());
+    }
+    return await axiosInstance.get(url.toString(), {
         headers: {
-            "User-Languages": navigator.languages.join(","),
-            "Authorization": accessToken ? "Bearer " + accessToken : ""
+            "User-Languages": navigator.languages.join(",")
         }
     }).then((response) => {
         if (response === undefined) {
@@ -170,41 +105,16 @@ export async function getVideos(page: number, size:number):Promise<Video[] | nul
         
 }
 
-export async function getAllVideosSorted(sortOption:number){
-    const url = URL_GET_ALL_VIDEOS + "?sortOption=" + sortOption.toString();
-
-    return await fetch(url, {
-        headers:{
-            "User-Languages": navigator.languages.join(",")
-        }
-    }).then((response) => {
-        if(response.ok){
-            return response.json();
-        }
-        return null;
-    })
-        .then((data) => {
-            if(data === null){
-                return null;
-            }
-            return data.map(Video.toVideo);
-        })
-        .catch((error) => {
-            console.error(error);
-            return null;
-        })
-}
-
 
 export async function getVideoById(videoId:string){
     const url = URL_GET_VIDEO_BY_ID + videoId;
 
-    return await fetch(url)
+    return await axiosInstance.get(url)
         .then((response) => {
             if(response.status === 404){
                 return null;
             }
-            return response.json();
+            return response.data;
         })
         .then((data) => {
             if(data === null){
@@ -222,7 +132,7 @@ export async function watchVideoById(videoId:string){
     const url = URL_WATCH_VIDEO_BY_ID + videoId;
     const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN);
 
-    return await axiosInstance(url).then((response) => {
+    return await axiosInstance.get(url).then((response) => {
         if(response.status === 404){
             return null;
         }
@@ -242,30 +152,31 @@ export async function watchVideoById(videoId:string){
 
 export async function checkUserLikedVideo(userId:string, videoId:string){
     const url = URL_CHECK_HAD_USER_LIKED + userId + "&videoId=" + videoId;
-    return await fetch(url).then(response => response.json());
+    return await axiosInstance.get(url).then(response => response.data).catch(console.error);
 }
 
 export async function checkUserSubscribedChannel(userId:string, channelId:string){
     const url = URL_CHECK_USER_SUBSCRIBED_CHANNEL_BY_ID + userId + "&channelId=" + channelId;
-    return await fetch(url).then(response => response.json());
+    return await axiosInstance.get(url).then(response => response.data);
 }
 
 
 export async function getUserById(userId:string){
-    const url = URL_GET_USER_BY_ID + userId;
+    const url = URL_USER_INFO;
+    url.searchParams.set("id", userId);
 
-    return await fetch(url)
+    return await axiosInstance.get(url.toString())
         .then(response => {
             if(response.status === 404){
                 return null;
             }
-            return response.json();
+            return response.data;
         })
         .then(data => {
             if(data === null){
                 return null;
             }
-            return User.toUser(data);
+            return new YoutUserProfile(data);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -279,9 +190,6 @@ export async function getAllUsers(options:string[], values: string[]){
     const url = URL_GET_ALL_USERS;
     
     return await axiosInstance.get(url, {
-        headers:{
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        },
         params:{
             option: options,
             value: values
@@ -294,7 +202,7 @@ export async function getAllUsers(options:string[], values: string[]){
         return null;
     }).then(data => {
         if(data != null){
-            return data.map(User.toUser)
+            return data.map((data:any) => new YoutUserProfile(data))
         }
     }).catch(error =>{
         console.error(error)
@@ -305,9 +213,6 @@ export async function getAllUsers(options:string[], values: string[]){
 export async function getUserSubscribes(userId:string){
     const url = URL_USER_SUBSCRIBES;
     return await axiosInstance.get(url, {
-        headers:{
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        },
         params:{
             userId: userId
         }
@@ -318,7 +223,7 @@ export async function getUserSubscribes(userId:string){
         return null;
     }).then(data => {
         if(data != null){
-            return data.map(User.toUser)
+            return data.map((data:any) => new YoutUserProfile(data))
         }
     }).catch(error =>{
         console.error(error)
@@ -329,9 +234,6 @@ export async function getUserSubscribes(userId:string){
 export async function getUserLikes(userId:string){
     const url = URL_USER_LIKES;
     return await axiosInstance.get(url, {
-        headers:{
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        },
         params:{
             userId: userId
         }
@@ -353,9 +255,6 @@ export async function getUserLikes(userId:string){
 export async function getAllVideos(options:string[], values:string[]){
     const url = URL_GET_ALL_VIDEOS_BY_OPTION;
     return await axiosInstance.get(url, {
-        headers:{
-            "Authorization":"Bearer " + localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
-        },
         params:{
             option: options,
             value: values
@@ -379,9 +278,9 @@ export async function getAllVideos(options:string[], values:string[]){
 export async function getAllUserVideosSorted(userId:string, sortOption:number){
     const url = URL_GET_ALL_USER_VIDEOS + userId + "&sortOption=" + sortOption;
 
-    return await fetch(url).then((response) => {
-        if(response.ok){
-            return response.json();
+    return await axiosInstance.get(url).then((response) => {
+        if(response.status === HttpStatusCode.Ok){
+            return response.data;
         }
         return null;
     })
@@ -391,8 +290,21 @@ export async function getAllUserVideosSorted(userId:string, sortOption:number){
             }
             return data.map(Video.toVideo);
         })
-        .catch((error) => {
-            console.error(error);
+}
+
+export async function getUserSearchHistory(userId:string){
+    const url = URL_GET_USER_SEARCH_HISTORY;
+    url.searchParams.set("userId", userId);
+    return await axiosInstance.get(url.toString())
+    .then(response => {
+        if(response.status === HttpStatusCode.Unauthorized){
             return null;
-        })
+        }
+        console.log("data " + response.data)
+        return response.data.map((query:string) => new SearchOption(query));
+    }).catch(error =>{
+        console.error(error);
+        return null;
+    })
+    ;
 }

@@ -1,31 +1,25 @@
 import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
-import {User} from "../../model/User";
 import ChannelDropdown from "./ChannelDropdown";
 import {ADMIN_ROUTE, VIDEO_UPLOAD_ROUTE} from "../../utils/RoutesConsts";
 import {useNavigate} from "react-router-dom";
-import { Context } from "../..";
-import { Authorities } from "../../utils/Authorities";
 import Modal from "../Modal";
+import { useAuth } from "react-oidc-context";
+import { checkIsUserAdmin } from "../../utils/AuthorityUtils";
 
 
-interface RightSectionProps{
-    mainUser:User | null;
-}
-
-const RightSection: React.FC<RightSectionProps> = ({mainUser}) =>{
+const RightSection: React.FC = () =>{
     const navigate = useNavigate();
-    const userService = useContext(Context).userService;
+    const auth = useAuth();
 
     const [uploadIconPath, setUploadIconPath] = useState("tool-icons/upload.svg");
     const [channelDropdownVisible, setChannelDropdownVisible] = useState<boolean>(false);
     const [isInfoVisible, setInfoVisible] = useState<boolean>(false);
 
-    const isAuth :boolean = mainUser !== null;
-    const isAdmin = mainUser?.isAdmin;
+    const isAdmin = checkIsUserAdmin(auth.user?.profile.authorities);
 
 
     const uploadButtonOnclick = (event: any) => {
-        if(uploadIconPath === "tool-icons/upload.svg" && isAuth){
+        if(uploadIconPath === "tool-icons/upload.svg" && auth.isAuthenticated){
             setUploadIconPath("tool-icons/upload.Black.svg");
         }
         else {
@@ -59,15 +53,15 @@ const RightSection: React.FC<RightSectionProps> = ({mainUser}) =>{
                 <div className="tooltip">Notifications</div>
             </button>
             {
-                isAuth ?
+                auth.isAuthenticated ?
                     <div>
                         <button className="channel-button" onMouseDown={(e) => setChannelDropdownVisible(!channelDropdownVisible)} onBlur={() => setChannelDropdownVisible(false)}>
-                            <img className="channel-picture" src={mainUser?.picture} alt="Encoded Image"/>
+                            <img className="channel-picture" src={auth.user?.profile.picture} alt="Encoded Image"/>
                         </button>
-                        <ChannelDropdown visible={channelDropdownVisible} mainUser={mainUser} setVisible={setChannelDropdownVisible}/>
+                        <ChannelDropdown visible={channelDropdownVisible} setVisible={setChannelDropdownVisible}/>
                     </div>
                     :
-                    <button className="no-channel-button" onClick={() => navigate("/login")} >
+                    <button className="no-channel-button" onClick={() => auth.signinRedirect()} >
                             Login
                     </button>
             }

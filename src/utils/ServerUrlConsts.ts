@@ -1,17 +1,23 @@
-import config from '../config.json';
-
 const PORT = "8080";
 const HOST = "localhost:";                  //192.168.15.118
 const PROTOCOL = "https://";
 const API = "/api"
 export const ADRESS = PROTOCOL + HOST + PORT + API;
+//TODO: convert all url strings to URL class
+// required params: userId
+export const URL_GET_USER_SEARCH_HISTORY:URL = new URL(ADRESS + "/user/search-history");
+// POST: no params, GET: id
+export const URL_USER_INFO:URL = new URL(ADRESS + "/user/user-info");
+// DELETE: search option value
+export const URL_DELETE_SEARCH_OPTION:URL = new URL(ADRESS + "/user/search-history")
+// GET: get recommendations
+export const URL_GET_RECOMMENDATIONS:URL = new URL(ADRESS + "/recs");
 
-export const URL_GET_USER_BY_ID:string = ADRESS + "/user?id=";
+
 export const URL_SEND_SEARCH_OPTION:string = ADRESS + "/user/search-history";
 export const URL_GET_ALL_USERS:string = ADRESS + "/user/admin";
 export const URL_GET_ALL_VIDEOS_BY_OPTION:string = ADRESS + "/admin";
 export const URL_VALIDATE_USER_BY_TOKEN:string = ADRESS + "/user/refresh"
-export const URL_DELETE_SEARCH_OPTION:string = ADRESS + "/user/search-history"
 export const URL_GET_ALL_VIDEOS:string = ADRESS + "/"
 export const URL_DELETE_VIDEO_BY_ID:string = ADRESS + "/?videoId="
 export const URL_UPDATE_VIDEO_BY_ID:string = ADRESS + "/?videoId="

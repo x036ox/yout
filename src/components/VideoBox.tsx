@@ -6,16 +6,21 @@ import {deleteVideo} from "../http-requests/DeleteRequests";
 import {useNavigate} from "react-router-dom";
 import {Q_PARAM_PARAM_VIDEO_ID, Q_PARAM_USER_ID} from "../utils/SearchQuerryParamConsts";
 import { sendNotInterested } from "../http-requests/PostRequests";
-import { User } from "../model/User";
 import { observer } from "mobx-react";
+import { User } from "oidc-client-ts";
+import { YoutUserProfile } from "../model/YoutUserProfile";
+import { checkIsUserAdmin } from "../utils/AuthorityUtils";
+import { useAuth } from "react-oidc-context";
 
 interface VideoBoxProps{
     video:Video,
-    user:User|null
+    isRecommendation?: boolean
 }
 
-const VideoBox : React.FC<VideoBoxProps>= observer(({video, user}) =>{
 
+const VideoBox : React.FC<VideoBoxProps>= observer(({video, isRecommendation = false}) =>{
+    const auth = useAuth();
+    const isAdmin = checkIsUserAdmin(auth.user?.profile.authorities);
     const [videoEditButtonClassName, setVideoEditButtonClassName] = useState("video-edit-button");
     const [videoDeleteButtonClassName, setVideoDeleteButtonClassName] = useState("video-delete-button");
     const [threeDotsActive, setThreeDotsActive] = useState<boolean>(false);
@@ -51,7 +56,7 @@ const VideoBox : React.FC<VideoBoxProps>= observer(({video, user}) =>{
             <a className="video-link" href={WATCH_ROUTE + Q_PARAM_PARAM_VIDEO_ID + video.id.toString()}>
             <div className="preview-box">
                 <img className = "preview" src = {video.thumbnail}/>
-                {user?.isAdmin && 
+                {isAdmin && 
                     <div>
                         <button className={videoEditButtonClassName} onClick={(e) => {
                     e.stopPropagation();
@@ -84,11 +89,11 @@ const VideoBox : React.FC<VideoBoxProps>= observer(({video, user}) =>{
                         <img className="three-dots-icon" src="tool-icons/three-dots.png"/>
                     </button>
                     <div className={"three-dots-options" + (threeDotsActive ? " active" : "")} onClick={(e) => {e.stopPropagation(); e.preventDefault()}} /**onMouseUp={(e) => /**sendNotInterested(video.id) }*/ >
-                        {user &&
+                        {auth.user && isRecommendation &&
                         <button className="three-dots-options-button" onMouseDown={(e) => {e.stopPropagation(); e.preventDefault()}} onMouseUp={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            user && sendNotInterested(video.id, user.id.toString());
+                            auth.user && sendNotInterested(video.id, auth.user.profile.sub);
                             video.deleted = true;
                         }}>
                             <img className="not-interested-icon" src="tool-icons/prohibition.png"/>

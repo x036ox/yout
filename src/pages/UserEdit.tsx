@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { PARAM_USER_ID } from "../utils/SearchQuerryParamConsts";
 import { getUserById } from "../http-requests/GetRequests";
-import { User } from "../model/User";
 import { useInput } from "../hooks/useInput";
 import { useNavigate } from "react-router-dom";
 import { updateUser } from "../http-requests/PutRequests";
 import Spinner from "../components/Spinner";
 import NotFound from "../components/NotFound";
+import { YoutUserProfile } from "../model/YoutUserProfile";
 
 
 const UserEdit = () =>{
     const urlParam = new URLSearchParams(window.location.search);
     const navigate = useNavigate();
 
-    const [user, setUser] = useState<User | null | undefined>(undefined);
+    const [user, setUser] = useState<YoutUserProfile | null | undefined>(undefined);
     const [pictureURL, setPictureUrl]= useState<string | undefined >();
     const fileReader = new FileReader();
     
@@ -42,7 +42,7 @@ const UserEdit = () =>{
         const id:string|null = urlParam.get(PARAM_USER_ID);
         if(id !== null) {
             getUserById(id).then((user) => {
-                if(user !== null){
+                if(user !== null && user.username){
                     setUser(user);
                     usernameInput.setValue(user.username);
                 }

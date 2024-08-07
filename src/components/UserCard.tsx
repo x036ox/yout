@@ -1,12 +1,12 @@
 import React from "react";
-import { User } from "../model/User";
 import "../styles/UserCard.css"
 import { useNavigate } from "react-router-dom";
 import { CHANNEL_ROUTE, USER_EDIT_ROUTE } from "../utils/RoutesConsts";
 import { deleteUser } from "../http-requests/DeleteRequests";
+import { YoutUserProfile } from "../model/YoutUserProfile";
 
 interface UserCardProps{
-    user:User;
+    user:YoutUserProfile;
     deleteUserFunc?:Function;
 }
 
@@ -27,7 +27,7 @@ const UserCard:React.FC<UserCardProps> = ({user, deleteUserFunc}) =>{
             <div className="user-info-container">
                 <div className="info-field-div">Username: {user.username}</div>
                 <div className="info-field-div">Subscribers: {user.subscribers}</div>
-                <div className="info-field-div">Amount of videos: {user.videos.length}</div>
+                <div className="info-field-div">Amount of videos: {user.videos ? user.videos.length : 0}</div>
                 <div className="info-field-div">Admin: {user.isAdmin}</div>
             </div>
             <span className="channel-link" onClick={() => navigate(CHANNEL_ROUTE + "?userId=" + user.id)}>
