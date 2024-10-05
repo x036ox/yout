@@ -7,15 +7,14 @@ import {MAX_SEARCHES} from "../../utils/Consts";
 import { useNavigate } from "react-router-dom";
 import { VIDEO_SEARCH_ROUTE } from "../../utils/RoutesConsts";
 import { Q_PARAM_SEARCH_QUERRY } from "../../utils/SearchQuerryParamConsts";
-import { useAuth } from "react-oidc-context";
-import { getUserSearchHistory } from "../../http-requests/GetRequests";
+import { useKeycloak } from "../../KeycloakPrivoder";
 
 
 const MiddleSection:React.FC = () =>{
     const searchbar = useInput("");
     const navigate = useNavigate();
     const searchButton = useRef<HTMLButtonElement | null>(null)
-    const auth = useAuth();
+    const keycloak = useKeycloak();
     const [searchHistory, setSearchHistory] = useState<Array<SearchOption>>([]);
 
     const onKeyDown = (event:any) =>{
@@ -33,20 +32,22 @@ const MiddleSection:React.FC = () =>{
             searchHistory.pop();
         }
         searchHistory.unshift(new SearchOption(searchbarValue));
-    
+        setSearchHistory(searchHistory)
         sendSearchOption(searchbarValue);
     }
 
     return(
         <div className="middle-section">
-            <Searchbar searchbar={searchbar} searchHistory={searchHistory} onKeyDown={onKeyDown}/>
+            <Searchbar searchbar={searchbar} searchHistory={searchHistory} setSearchHistory={setSearchHistory} onKeyDown={onKeyDown}/>
             <button ref={searchButton} className={"search-button"} onClick = {
                 () =>{
                     if(searchbar.value.length > 0){
                         navigate(VIDEO_SEARCH_ROUTE + Q_PARAM_SEARCH_QUERRY + searchbar.value);
                     } 
-                    if(auth.user){
+                    if(keycloak.authenticated){
                         addSearchOption(searchbar.value);
+                        console.log(searchHistory)
+
                     }
                         
                 }}>

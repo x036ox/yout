@@ -3,26 +3,25 @@ import { getWatchHistory } from "../http-requests/GetRequests";
 import { PARAM_USER_ID } from "../utils/SearchQuerryParamConsts";
 import Video from "../model/Video";
 import VideoBox from "../components/VideoBox";
-import { Context } from "..";
 import { observer } from "mobx-react";
 import "../styles/History.css"
 import NotFound from "../components/NotFound";
 import Spinner from "../components/Spinner";
-import { useAuth } from "react-oidc-context";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 const History = observer(() =>{
     const urlParam = new URLSearchParams(window.location.search);
-    const auth = useAuth();
+    const keycloak = useKeycloak();
     const [videos, setVideos] = useState<Video[] | null | undefined>();
 
     useEffect(() =>{
         const userId = urlParam.get(PARAM_USER_ID);
         if(userId){
             getWatchHistory(userId).then(setVideos);
-        }else if(auth.user){
-            getWatchHistory(auth.user.profile.sub).then(setVideos);
+        }else if(keycloak.subject){
+            getWatchHistory(keycloak.subject).then(setVideos);
         }
-    },[auth.user])
+    },[keycloak.subject])
 
     if(videos === undefined){
         return(

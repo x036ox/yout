@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useAuth } from "react-oidc-context";
 import FilterBar from "../components/FilterBar";
 import NotFound from "../components/NotFound";
 import Spinner from "../components/Spinner";
@@ -8,23 +7,22 @@ import VideoBox from "../components/VideoBox";
 import {getRecommendations } from "../http-requests/GetRequests";
 import Video from "../model/Video";
 import "../styles/Videos.css";
-import { checkIsUserAdmin } from "../utils/AuthorityUtils";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 const MainPage = () =>{
     const REQ_VIDEOS_SIZE = 30;
 
-
+    const keycloak = useKeycloak();
     const [videos, setVideos] = useState<Video[] | null | undefined>(undefined);
-    const auth = useAuth();
-    const isAdmin:boolean = checkIsUserAdmin(auth.user?.profile.authorities);
     const mainPageRef = useRef<HTMLDivElement | null>(null);
     const [page, setPage] = useState<number>(0);
+    const [hasMore, setHasMore] = useState<boolean>(true)
 
 
 
     useEffect(() =>{
         getRecommendations(page, REQ_VIDEOS_SIZE, null).then(setVideos);
-    }, [])
+    }, [keycloak.authenticated])
     
     if(videos === null) return(
         <NotFound/>
@@ -46,11 +44,18 @@ const MainPage = () =>{
         <InfiniteScroll style={{overflow:"hidden"}}
         dataLength={videos.length}
         next={() => {
-            getRecommendations(page + 1, REQ_VIDEOS_SIZE, null).then(vids =>vids && setVideos(videos.concat(vids)));
+            getRecommendations(page + 1, REQ_VIDEOS_SIZE, null).then(vids =>{
+                if(!vids || videos.length < REQ_VIDEOS_SIZE){
+                    setHasMore(false);
+                }
+                if(vids) {
+                    setVideos(videos.concat(vids))
+                } 
+            });
             setPage(page + 1);
         }}
         loader={<Spinner/>}
-        hasMore={true}
+        hasMore={hasMore}
         >
             <FilterBar onChange={filterBarOnChange}/>
             <div className={"all-videos-grid"}>

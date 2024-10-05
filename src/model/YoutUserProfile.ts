@@ -1,12 +1,11 @@
 import { UserProfile } from "oidc-client-ts";
 import Video from "./Video";
-import { checkIsUserAdmin, parseAuthorities } from "../utils/AuthorityUtils";
 
 interface YoutUserArgs{
     id: string,
-    authorities: string,
     subscribers:number,
-    username:string
+    username:string,
+    isAdmin:boolean,
     picture:string,
     userVideos:Video[] | undefined
 }
@@ -14,7 +13,6 @@ interface YoutUserArgs{
 export class YoutUserProfile{
     private _id: string;
     private _subscribers:number | undefined;
-    private _authorities:string[];
     private _isAdmin:boolean;
     private _picture: string;
     private _videos: Video[] | undefined;
@@ -24,8 +22,7 @@ export class YoutUserProfile{
     constructor(args:YoutUserArgs){
         this._id = args.id;
         this._subscribers = args.subscribers;
-        this._authorities = parseAuthorities(args.authorities);
-        this._isAdmin = checkIsUserAdmin(this.authorities);
+        this._isAdmin = args.isAdmin;
         this._picture = args.picture;
         this._username = args.username;
     }
@@ -64,10 +61,6 @@ export class YoutUserProfile{
 
     get subscribers() :number | undefined{
         return this._subscribers;
-    }
-
-    get authorities(): string[]{
-        return this._authorities;
     }
 
     get isAdmin(): boolean{

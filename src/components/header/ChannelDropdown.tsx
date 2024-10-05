@@ -3,9 +3,7 @@ import "../../styles/ChannelDropdown.css"
 import {useNavigate} from "react-router-dom";
 import {CHANNEL_ROUTE, USER_HISTORY_ROUTE, VIDEO_UPLOAD_ROUTE} from "../../utils/RoutesConsts";
 import {Q_PARAM_USER_ID} from "../../utils/SearchQuerryParamConsts";
-import {LOCAL_STORAGE_USER} from "../../utils/Consts";
-import {Context} from "../../index";
-import { useAuth } from "react-oidc-context";
+import { signout, useKeycloak } from "../../KeycloakPrivoder";
 
 interface ChannelDropdownProps{
     visible:boolean;
@@ -13,8 +11,7 @@ interface ChannelDropdownProps{
 }
 
 const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, setVisible}) =>{
-    const navigate = useNavigate();
-    const auth = useAuth();
+    const keycloak = useKeycloak();
     let rootClasses = "channel-dropdown";
 
     if(visible)
@@ -28,7 +25,7 @@ const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, setVisible}) =
     }
 
     function authorizationOnClick(){
-        auth.signinRedirect();
+        signout(keycloak);
         buttonOnClick(null);
     }
 
@@ -38,16 +35,16 @@ const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, setVisible}) =
     return (
         <div className={rootClasses} onMouseDown={(e) => e.preventDefault()} >
             <div className="channel-header">
-                <img className="channel-picture" src={auth.user?.profile.picture} />
+                <img className="channel-picture" src={keycloak?.tokenParsed?.picture} />
                 <div className = "channel-info">
-                    <div className="channel-name">{auth.user?.profile.nickname}</div>
-                    <div className="channel-tag">id: {auth.user?.profile.sub}</div>
+                    <div className="channel-name">{keycloak.profile?.username}</div>
+                    <div className="channel-tag">id: {keycloak.subject}</div>
                     <a className="account-control-link">Google account Control</a>
                 </div>
             </div>
             <div className="dropdown-options">
                 <div>
-                    <button className="my-channel-button" onClick={() => buttonOnClick(CHANNEL_ROUTE + Q_PARAM_USER_ID + auth.user?.profile.sub)}>
+                    <button className="my-channel-button" onClick={() => buttonOnClick(CHANNEL_ROUTE + Q_PARAM_USER_ID + keycloak.subject)}>
                         My channel
                     </button>
                     <button className="creative-studio" onClick={() => buttonOnClick(VIDEO_UPLOAD_ROUTE)}>
@@ -57,14 +54,14 @@ const ChannelDropdown:React.FC<ChannelDropdownProps> = ({visible, setVisible}) =
                         My history
                     </button>
                     <button className="change-account" onClick={() => {
-                        auth.signoutSilent();
+                        signout(keycloak);
                         authorizationOnClick()
                     }}>
                         Change account
                     </button>
                     <button className="sign-out" onClick={() => {
                         buttonOnClick("");
-                        auth.signoutSilent();
+                        signout(keycloak);
                         // userService.logout();
                     }}>
                         Sign out

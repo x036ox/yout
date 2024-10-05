@@ -1,25 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import {authRoutes, publicRoutes} from "./routes";
 import {Route, Routes} from "react-router-dom";
-import MainPage from "./pages/MainPage";
-import { Context } from ".";
 import { observer } from "mobx-react";
-import { useAuth } from "react-oidc-context";
-import { checkIsUserAdmin } from "./utils/AuthorityUtils";
+import { Authorities } from "./utils/Authorities";
+import { useKeycloak } from "./KeycloakPrivoder";
 
 const AppRouter = observer(() => {
-    const auth = useAuth();
-    const isAdmin = checkIsUserAdmin(auth.user?.profile.authorities);
+    const keycloak = useKeycloak();
+    const isAdmin = keycloak.hasResourceRole(Authorities.ADMIN);
 
 
     
     return(
         <Routes>
             { isAdmin? authRoutes.map(({path, Component}) =>
-                <Route path = {path} element={Component}/>) : null}
+                <Route key={path} path = {path} element={Component}/>) : null}
 
             { publicRoutes.map(({path, Component}) =>
-                <Route path = {path} element={Component}/>)}
+                <Route key={path} path = {path} element={Component}/>)}
         </Routes>
     )
     });

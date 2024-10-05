@@ -6,9 +6,9 @@ import { VIDEO_SEARCH_ROUTE } from "../../utils/RoutesConsts";
 import { Q_PARAM_SEARCH_QUERRY } from "../../utils/SearchQuerryParamConsts";
 import { useNavigate } from "react-router-dom";
 import { YoutUserProfile } from "../../model/YoutUserProfile";
-import { useAuth } from "react-oidc-context";
 import { getUserSearchHistory } from "../../http-requests/GetRequests";
 import { SearchOption } from "../../model/SearchOption";
+import { useKeycloak } from "../../KeycloakPrivoder";
 
 interface SearchHistoryProps{
     searchbar:any;
@@ -18,16 +18,19 @@ interface SearchHistoryProps{
 
 const SearchHistory :React.FC<SearchHistoryProps>= observer(({searchbar,searchHistory, className}) =>{
     const navigate = useNavigate();
-    const auth = useAuth();
+    const keycloak = useKeycloak();
+    const [searches, setSearches] = useState<SearchOption[]>(searchHistory);
 
-    if(!auth.user) return null;
+    useEffect(() => {
+        setSearches(searchHistory);
+      }, [searchHistory])
 
-    
+    if(!keycloak.authenticated) return null;    
 
     return(
         <div className={className}>
             {
-                searchHistory.map((search, index) =>{
+                searches.map((search, index) =>{
                     return(
                         <div key={new Date().getDate() / index + 1 }  >
                             {

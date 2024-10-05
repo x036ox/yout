@@ -2,22 +2,17 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {useInput} from "../hooks/useInput";
 import {useNavigate} from "react-router-dom";
 import {sendNewVideo} from "../http-requests/PostRequests";
-import {Context} from "../index";
-import Video from "../model/Video";
 import "../styles/VideoUpload.css"
-import {TimePicker} from "antd";
-import dayjs, {Dayjs} from "dayjs";
 import {observer} from "mobx-react";
 import { Form } from "react-bootstrap";
 import Spinner from "../components/Spinner";
-import { useAuth } from "react-oidc-context";
-import { User } from "oidc-client-ts";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 
 
 const VideoUpload = observer(() =>{
 
-    const auth = useAuth();
+    const keycloak = useKeycloak();
 
     const titleInput = useInput("");
     const descriptionInput = useInput("")
@@ -41,11 +36,11 @@ const VideoUpload = observer(() =>{
     
 
     useEffect(() => {
-        if(!auth.isAuthenticated){
+        if(!keycloak.authenticated){
             alert("Should be authorized to upload video");
            window.location.href = "/";
         }
-    }, [auth]);
+    }, [keycloak]);
 
     useEffect(() =>{
         if(imageFiles !== null ){
@@ -57,8 +52,8 @@ const VideoUpload = observer(() =>{
     }, [imageFiles])
 
 
-    async function createOnClick(mainUser:User | null | undefined){
-        if(mainUser){
+    async function createOnClick(isAuthenticated:boolean | undefined){
+        if(isAuthenticated){
             if(titleInput.value.length > 0 && descriptionInput.value.length > 0 && imageFiles !== null && videoFiles !== null && categorySelect.current !== null){
                 if(!imageFiles[0] && !videoFiles[0]){
                     alert("You have to upload video and thumbnail");
@@ -78,6 +73,8 @@ const VideoUpload = observer(() =>{
             else{
                 alert("Fields must not be empty");
             }
+        } else{
+            alert("Should be authenticated");
         }
     }
 
@@ -111,7 +108,7 @@ const VideoUpload = observer(() =>{
                 </div>
 
 
-                <button className={"save-button"} onClick={() => createOnClick(auth.user)}>
+                <button className={"save-button"} onClick={() => createOnClick(keycloak.authenticated)}>
                     Create
                 </button>
 

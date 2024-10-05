@@ -5,7 +5,9 @@ import {
     VIDEO_EDIT_ROUTE,
     VIDEO_UPLOAD_ROUTE, VIDEO_SEARCH_ROUTE, WATCH_ROUTE, USER_EDIT_ROUTE, USER_HISTORY_ROUTE,
     USER_LIKES_ROUTE,
-    USER_SUBSCRIBES_ROUTE
+    USER_SUBSCRIBES_ROUTE,
+    CHOOSE_PICTURE_ROUTE,
+    SILENT_CHECK_SSO_ROUTE as SILENT_CHECK_SSO_ROUTE
 } from "./utils/RoutesConsts";
 import React, {Component, ReactNode} from "react";
 import MainPage from "./pages/MainPage";
@@ -65,8 +67,5 @@ export const publicRoutes = [
     },{
         path:USER_SUBSCRIBES_ROUTE,
         Component:<UserSubscribes/>
-    },{
-        path:USER_LIKES_ROUTE,
-        Component:<UserLikes/>
     }
 ]

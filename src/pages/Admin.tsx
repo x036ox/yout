@@ -1,5 +1,4 @@
-import React, { MouseEventHandler, RefObject, useContext, useEffect, useRef, useState } from "react";
-import { Context } from "..";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Admin.css"
 import { getAllUsers, getAllVideos } from "../http-requests/GetRequests";
@@ -9,8 +8,9 @@ import VideoBox from "../components/VideoBox";
 import { addUsers, addVideos } from "../http-requests/PostRequests";
 import Spinner  from "../components/Spinner";
 import NotFound from "../components/NotFound";
-import { useAuth } from "react-oidc-context";
 import { YoutUserProfile } from "../model/YoutUserProfile";
+import { Authorities } from "../utils/Authorities";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 enum Tabs{
     VIDEOS,
@@ -38,7 +38,9 @@ enum VideoOptions{
 }
 
 export const Admin = () => {
-    const auth = useAuth();
+    const ADD_VIDEOS_NUM = "5";
+
+    const keycloak = useKeycloak();
     const navigate = useNavigate();
 
     const [currentTab, setCurrentTab] = useState<Tabs>(Tabs.USERS);
@@ -49,11 +51,10 @@ export const Admin = () => {
     const [isContentLoading, setIsContentLoading] = useState<boolean>(false);
     
     useEffect(() => {
-        const authorities :any= auth.user?.profile.authorities;
-        if(auth.user && !authorities.split(",").includes("ROLE_ADMIN")){
+        if(!keycloak.hasResourceRole(Authorities.ADMIN)){
             navigate("/");
         }
-    },[auth.user])
+    },[keycloak])
 
     function onChange(event:any){
         const value = event.target.value;
@@ -119,14 +120,14 @@ export const Admin = () => {
       async function addUsersOnClick(event:any){
         setAddUsersButtonPressed(true);
         event.target.disabled = true;
-        addUsers("5").then(() => setAddUsersButtonPressed(false));
+        addUsers(ADD_VIDEOS_NUM).then(() => setAddUsersButtonPressed(false));
         event.target.disabled = false;
       }
       
       async function addVieosOnClick(event :any){
         setAddVideosButtonPressed(true);
         event.target.disabled = true;
-        await addVideos("2").then(() => setAddVideosButtonPressed(false));
+        await addVideos("5").then(() => setAddVideosButtonPressed(false));
         event.target.disabled = false;
       }
 
@@ -209,7 +210,7 @@ export const Admin = () => {
                 currentTab === Tabs.VIDEOS &&
                 <div className="videos-tab">
                     <button className="add-button" onClick={addVieosOnClick}>
-                        Add 2 videos
+                        Add {ADD_VIDEOS_NUM} videos
                     </button>
                     {
                         addVideosButtonPressed && 

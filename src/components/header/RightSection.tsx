@@ -3,23 +3,24 @@ import ChannelDropdown from "./ChannelDropdown";
 import {ADMIN_ROUTE, VIDEO_UPLOAD_ROUTE} from "../../utils/RoutesConsts";
 import {useNavigate} from "react-router-dom";
 import Modal from "../Modal";
-import { useAuth } from "react-oidc-context";
-import { checkIsUserAdmin } from "../../utils/AuthorityUtils";
+import { Authorities } from "../../utils/Authorities";
+import { useKeycloak } from "../../KeycloakPrivoder";
 
 
 const RightSection: React.FC = () =>{
     const navigate = useNavigate();
-    const auth = useAuth();
+    const keycloak = useKeycloak();
 
     const [uploadIconPath, setUploadIconPath] = useState("tool-icons/upload.svg");
     const [channelDropdownVisible, setChannelDropdownVisible] = useState<boolean>(false);
     const [isInfoVisible, setInfoVisible] = useState<boolean>(false);
 
-    const isAdmin = checkIsUserAdmin(auth.user?.profile.authorities);
+    const isAdmin = keycloak.hasResourceRole(Authorities.ADMIN);
+
 
 
     const uploadButtonOnclick = (event: any) => {
-        if(uploadIconPath === "tool-icons/upload.svg" && auth.isAuthenticated){
+        if(uploadIconPath === "tool-icons/upload.svg" && keycloak.authenticated){
             setUploadIconPath("tool-icons/upload.Black.svg");
         }
         else {
@@ -53,15 +54,15 @@ const RightSection: React.FC = () =>{
                 <div className="tooltip">Notifications</div>
             </button>
             {
-                auth.isAuthenticated ?
+                keycloak.authenticated ?
                     <div>
                         <button className="channel-button" onMouseDown={(e) => setChannelDropdownVisible(!channelDropdownVisible)} onBlur={() => setChannelDropdownVisible(false)}>
-                            <img className="channel-picture" src={auth.user?.profile.picture} alt="Encoded Image"/>
+                            <img className="channel-picture" src={keycloak?.tokenParsed?.picture} alt="Encoded Image"/>
                         </button>
                         <ChannelDropdown visible={channelDropdownVisible} setVisible={setChannelDropdownVisible}/>
                     </div>
                     :
-                    <button className="no-channel-button" onClick={() => auth.signinRedirect()} >
+                    <button className="no-channel-button" onClick={() => keycloak.login()} >
                             Login
                     </button>
             }

@@ -9,8 +9,9 @@ import { sendNotInterested } from "../http-requests/PostRequests";
 import { observer } from "mobx-react";
 import { User } from "oidc-client-ts";
 import { YoutUserProfile } from "../model/YoutUserProfile";
-import { checkIsUserAdmin } from "../utils/AuthorityUtils";
-import { useAuth } from "react-oidc-context";
+
+import { Authorities } from "../utils/Authorities";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 interface VideoBoxProps{
     video:Video,
@@ -19,8 +20,8 @@ interface VideoBoxProps{
 
 
 const VideoBox : React.FC<VideoBoxProps>= observer(({video, isRecommendation = false}) =>{
-    const auth = useAuth();
-    const isAdmin = checkIsUserAdmin(auth.user?.profile.authorities);
+    const keycloak = useKeycloak();
+    const isAdmin = keycloak.hasResourceRole(Authorities.ADMIN);
     const [videoEditButtonClassName, setVideoEditButtonClassName] = useState("video-edit-button");
     const [videoDeleteButtonClassName, setVideoDeleteButtonClassName] = useState("video-delete-button");
     const [threeDotsActive, setThreeDotsActive] = useState<boolean>(false);
@@ -89,11 +90,11 @@ const VideoBox : React.FC<VideoBoxProps>= observer(({video, isRecommendation = f
                         <img className="three-dots-icon" src="tool-icons/three-dots.png"/>
                     </button>
                     <div className={"three-dots-options" + (threeDotsActive ? " active" : "")} onClick={(e) => {e.stopPropagation(); e.preventDefault()}} /**onMouseUp={(e) => /**sendNotInterested(video.id) }*/ >
-                        {auth.user && isRecommendation &&
+                        {keycloak.subject && isRecommendation &&
                         <button className="three-dots-options-button" onMouseDown={(e) => {e.stopPropagation(); e.preventDefault()}} onMouseUp={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            auth.user && sendNotInterested(video.id, auth.user.profile.sub);
+                            keycloak.subject && sendNotInterested(video.id, keycloak.subject);
                             video.deleted = true;
                         }}>
                             <img className="not-interested-icon" src="tool-icons/prohibition.png"/>

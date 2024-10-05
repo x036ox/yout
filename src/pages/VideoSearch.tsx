@@ -1,6 +1,5 @@
 import { Content } from "antd/es/layout/layout";
 import React, { useContext, useEffect, useState } from "react";
-import { Context } from "..";
 import { observer } from "mobx-react";
 import Video from "../model/Video";
 import { searchVideos } from "../http-requests/GetRequests";
