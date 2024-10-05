@@ -1,11 +1,7 @@
 import {SearchOption} from "../model/SearchOption";
 import Video, { NewVideo } from "../model/Video";
-import {URL_ADD_USERS, URL_ADD_VIDEOS, URL_LIKE_VIDEO_BY_ID, URL_LOGIN_USER, URL_NOT_INTERESTED, URL_SEND_NEW_USER, URL_SEND_NEW_VIDEO, URL_SEND_SEARCH_OPTION, URL_USER_INFO, URL_UPLOAD_VIDEO} from "../utils/ServerUrlConsts";
-import {NOT_ACCEPTABLE, StatusCodes} from "http-status-codes";
-import {Simulate} from "react-dom/test-utils";
-import { LOCAL_STORAGE_ACCESS_TOKEN } from "../utils/Consts";
-import axios from "axios";
-import { axiosInstance } from "../App";
+import {URL_ADD_USERS, URL_ADD_VIDEOS, URL_LIKE_VIDEO_BY_ID, URL_LOGIN_USER, URL_NOT_INTERESTED, URL_SEND_NEW_USER, URL_SEND_NEW_VIDEO, URL_SEND_SEARCH_OPTION, URL_UPLOAD_VIDEO, ApiEndpoints} from "../utils/endpoints";
+import axiosInstance from "../axiosInstance";
 import { IdTokenClaims } from "oidc-client-ts";
 import { fetchImageAsFile } from "../utils/ImageUtils";
 
@@ -21,7 +17,7 @@ export async function sendSearchOption(searchOptionValue:string){
 }
 
 export async function sendUserInfo(userProfile:IdTokenClaims){
-    const url = URL_USER_INFO.toString();
+    const url = ApiEndpoints.USER_INFO;
     const formData = new FormData();
     formData.append("id", userProfile.sub);
     if(userProfile.nickname){

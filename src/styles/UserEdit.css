@@ -1,0 +1,35 @@
+.user-edit-page{
+    display: flex;
+    justify-content: center;
+    /* background-color: lightblue; */
+    height: 80vh;
+    align-items: center;
+}
+
+.edit-page{
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+    gap: 15px;
+}
+
+.user-pics{
+    aspect-ratio: 1/1;
+    max-width: 250px;
+}
+
+.title-input{
+    border:1px solid rgb(200,200,200);
+    font-family: Roboto, Arial;
+    font-size: 15px;
+    margin-left: 4px;
+    flex-grow: 1; 
+}
+
+.link-element{
+    text-decoration: underline;
+    align-self: end;
+    font-size: 80%;
+    color: blue;
+}

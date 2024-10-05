@@ -1,12 +1,10 @@
 import { HttpStatusCode } from "axios";
-import { axiosInstance } from "../App";
+import axiosInstance from "../axiosInstance";
 import { LOCAL_STORAGE_ACCESS_TOKEN } from "../utils/Consts";
-import {URL_DELETE_SEARCH_OPTION, URL_DELETE_USER_BY_ID, URL_DELETE_VIDEO_BY_ID, URL_DISLIKE_VIDEO_BY_ID, URL_LOGOUT} from "../utils/ServerUrlConsts";
+import {ApiEndpoints, buildUrl, URL_DELETE_USER_BY_ID, URL_DELETE_VIDEO_BY_ID, URL_DISLIKE_VIDEO_BY_ID, URL_LOGOUT} from "../utils/endpoints";
 
 export async function deleteSearchOption(searchOptionValue:string){
-    const url = URL_DELETE_SEARCH_OPTION;
-    url.searchParams.set("searchOptionValue", searchOptionValue);
-
+    const url = buildUrl(ApiEndpoints.DELETE_SEARCH_OPTION,{searchOptionValue: searchOptionValue});
     axiosInstance.delete(url.toString()).then(response => response.data)
 }
 
@@ -38,7 +36,9 @@ export async function deleteUser(id:string){
     const url = URL_DELETE_USER_BY_ID + id;
 
     return await axiosInstance.delete(url).then(response => {
-        if(response.status === HttpStatusCode.Ok) return true;
+        if(response.status === HttpStatusCode.Ok){
+            return true;
+        }
         return false;
-    })   
+    });
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { CHANNEL_ROUTE, USER_EDIT_ROUTE } from "../utils/RoutesConsts";
 import { deleteUser } from "../http-requests/DeleteRequests";
 import { YoutUserProfile } from "../model/YoutUserProfile";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 interface UserCardProps{
     user:YoutUserProfile;
@@ -13,7 +14,7 @@ interface UserCardProps{
 const UserCard:React.FC<UserCardProps> = ({user, deleteUserFunc}) =>{
 
     const navigate = useNavigate();
-
+    const keycloak = useKeycloak();
 
     return(
         <div className="user-card">
@@ -34,11 +35,17 @@ const UserCard:React.FC<UserCardProps> = ({user, deleteUserFunc}) =>{
                 <img className="channel-link-img" src="tool-icons/link.png"/>
             </span>
             <span className="delete-button" onClick={() =>{
-                deleteUser(user.id.toString()).then(deleted =>{
-                    if(deleted && deleteUserFunc){
-                        deleteUserFunc(user);
-                    }
-                })
+                if(keycloak.subject !== user.id){
+                    deleteUser(user.id.toString()).then(deleted =>{
+                        if(deleted && deleteUserFunc){
+                            deleteUserFunc(user);
+                        } else{
+                            alert("You are trying to delete a real user");
+                        }
+                    })
+                } else {
+                    alert("You are trying to delete your own user");
+                }
             }} >
                 <img className="delete-img" src="tool-icons/VideoDeleteIcon.png"/>
             </span>

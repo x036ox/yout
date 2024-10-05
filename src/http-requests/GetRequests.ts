@@ -1,15 +1,17 @@
 import Video from "../model/Video";
 import {
+    ApiEndpoints,
     URL_CHECK_HAD_USER_LIKED, URL_CHECK_USER_SUBSCRIBED_CHANNEL_BY_ID, URL_CONFIRM_EMAIL, URL_GET_ALL_USERS, URL_GET_ALL_USER_VIDEOS,
     URL_GET_ALL_VIDEOS,
-    URL_GET_ALL_VIDEOS_BY_OPTION, URL_GET_RECOMMENDATIONS, URL_GET_USER_SEARCH_HISTORY, URL_GET_VIDEO_BY_ID, URL_GET_WATCH_HISTORY, URL_LIKE_VIDEO_BY_ID, URL_SEARCH_VIDEO, URL_USER_INFO, URL_USER_LIKES, URL_USER_SUBSCRIBES, URL_VALIDATE_USER_BY_TOKEN, URL_WATCH_VIDEO_BY_ID
-} from "../utils/ServerUrlConsts";
+    URL_GET_ALL_VIDEOS_BY_OPTION, URL_GET_VIDEO_BY_ID, URL_GET_WATCH_HISTORY, URL_LIKE_VIDEO_BY_ID, URL_SEARCH_VIDEO, URL_USER_LIKES, URL_USER_SUBSCRIBES, URL_VALIDATE_USER_BY_TOKEN, URL_WATCH_VIDEO_BY_ID,
+    buildUrl
+} from "../utils/endpoints";
 import { LOCAL_STORAGE_ACCESS_TOKEN } from "../utils/Consts";
 import { AxiosError, HttpStatusCode } from "axios";
 import axios from "axios";
 import qs from "qs";
 import { useContext } from "react";
-import { axiosInstance } from "../App";
+import axiosInstance from "../axiosInstance";
 import { YoutUserProfile } from "../model/YoutUserProfile";
 import { SearchOption } from "../model/SearchOption";
 import { error } from "console";
@@ -69,12 +71,11 @@ export async function confirmEmail(param:string){
 
 export async function getRecommendations(page: number, size:number, sortOption: number | null | undefined):Promise<Video[] | null | undefined> {
     const accessToken = localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN);
-    const url = URL_GET_RECOMMENDATIONS;
-    url.searchParams.set("page", page.toString());
-    url.searchParams.set("size", size.toString());
+    const params = {page: page.toString(), size: size.toString()};
     if(sortOption){
-        url.searchParams.set("sortOption", sortOption.toString());
+        Object.assign(params, {sortOption:sortOption.toString()})
     }
+    const url = buildUrl(ApiEndpoints.GET_RECOMMENDATIONS, params);
     return await axiosInstance.get(url.toString(), {
         headers: {
             "User-Languages": navigator.languages.join(",")
@@ -162,8 +163,7 @@ export async function checkUserSubscribedChannel(userId:string, channelId:string
 
 
 export async function getUserById(userId:string){
-    const url = URL_USER_INFO;
-    url.searchParams.set("id", userId);
+    const url = buildUrl(ApiEndpoints.USER_INFO,{id: userId});
 
     return await axiosInstance.get(url.toString())
         .then(response => {
@@ -293,14 +293,13 @@ export async function getAllUserVideosSorted(userId:string, sortOption:number){
 }
 
 export async function getUserSearchHistory(userId:string){
-    const url = URL_GET_USER_SEARCH_HISTORY;
-    url.searchParams.set("userId", userId);
+    const url = buildUrl(ApiEndpoints.GET_USER_SEARCH_HISTORY, {userId:userId});
     return await axiosInstance.get(url.toString())
     .then(response => {
         if(response.status === HttpStatusCode.Unauthorized){
             return null;
         }
-        console.log("data " + response.data)
+        
         return response.data.map((query:string) => new SearchOption(query));
     }).catch(error =>{
         console.error(error);

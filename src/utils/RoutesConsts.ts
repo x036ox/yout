@@ -9,3 +9,6 @@ export const USER_EDIT_ROUTE = "/channel-edit"
 export const USER_HISTORY_ROUTE = "/history"
 export const USER_LIKES_ROUTE = "/likes"
 export const USER_SUBSCRIBES_ROUTE = "/subscribes"
+export const CHOOSE_PICTURE_ROUTE = "/subscribes"
+export const SILENT_CHECK_SSO_ROUTE = "/silent-check-sso.html"
+

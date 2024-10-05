@@ -1,6 +1,4 @@
 import {observer} from "mobx-react";
-import {useContext, useState} from "react";
-import {Context} from "../../index";
 import "../../styles/Header.css"
 import LeftSection from "./LeftSection";
 import MiddleSection from "./MiddleSection";

@@ -7,18 +7,24 @@ import { updateUser } from "../http-requests/PutRequests";
 import Spinner from "../components/Spinner";
 import NotFound from "../components/NotFound";
 import { YoutUserProfile } from "../model/YoutUserProfile";
+import "../styles/UserEdit.css"
+import axiosInstance from "../axiosInstance";
+import { AuthServerEndpoints } from "../utils/endpoints";
+import { useKeycloak } from "../KeycloakPrivoder";
+import { updateToken } from "../keycloak";
 
 
 const UserEdit = () =>{
     const urlParam = new URLSearchParams(window.location.search);
     const navigate = useNavigate();
+    const keycloak = useKeycloak();
 
     const [user, setUser] = useState<YoutUserProfile | null | undefined>(undefined);
     const [pictureURL, setPictureUrl]= useState<string | undefined >();
     const fileReader = new FileReader();
     
     const thumbnailInput = useInput("");
-    const usernameInput = useInput("");
+    const emailInput = useInput("");
     const imageFiles:FileList | null = thumbnailInput.ref.current !== undefined ? thumbnailInput.ref.current.files : null;
 
 
@@ -44,7 +50,6 @@ const UserEdit = () =>{
             getUserById(id).then((user) => {
                 if(user !== null && user.username){
                     setUser(user);
-                    usernameInput.setValue(user.username);
                 }
             });
         }
@@ -67,22 +72,20 @@ const UserEdit = () =>{
 
     return(
         <div className={"user-edit-page"}>
-            {
-                <div className={"edit-page"}>
-                    <img className = "user-pic" src = {pictureURL ? pictureURL : user.picture}/>
+            <div className={"edit-page"}>
+                    <img className = "user-pics" src = {pictureURL ? pictureURL : user.picture}/>
                     <input className="thumbnail-input" type="file" {...thumbnailInput} accept="image/*"/>
-                    <div className={"username"}>
-                        Username:
-                        <input className={"title-input"} {...usernameInput} maxLength={100}/>
-                    </div>
+                    <a className="link-element" href={AuthServerEndpoints.ACCOUNT_API}>Edit more</a>
 
                     <div className={"save-link"}>
                         <button className={"save-button"} onClick={() =>{
                             const id:string|null = urlParam.get(PARAM_USER_ID);
                             if(id){
-                                updateUser(id, imageFiles ? imageFiles[0] : null, usernameInput.value !== user.username ? usernameInput.value : null).then(updated =>{
+                                updateUser(id, imageFiles ? imageFiles[0] : null, user.email).then(updated =>{
                                     if(updated){
-                                        navigate("/");
+                                        updateToken().then(() => {
+                                            window.location.href = "/";
+                                        });
                                     }
                                 });
                             }
@@ -91,7 +94,6 @@ const UserEdit = () =>{
                         </button>
                     </div>
                 </div>
-            }
         </div>
     )
 }

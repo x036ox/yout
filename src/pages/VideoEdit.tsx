@@ -69,7 +69,7 @@ const VideoEdit = () => {
         if(categorySelect.current && video){
             categorySelect.current.value = video.category;
         }
-    }, [categorySelect.current])
+    }, [categorySelect.current, video])
 
     async function saveOnClick(video:Video){
         setIsSpinnerVisible(true);

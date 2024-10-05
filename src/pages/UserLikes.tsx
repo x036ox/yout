@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../styles/UserLikes.css"
-import { Context } from "..";
 import { getUserLikes, getUserSubscribes } from "../http-requests/GetRequests";
 import VideoBox from "../components/VideoBox";
 import Spinner from "../components/Spinner";
@@ -8,20 +7,20 @@ import NotFound from "../components/NotFound";
 import Video from "../model/Video";
 import { observer } from "mobx-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "react-oidc-context";
+import { useKeycloak } from "../KeycloakPrivoder";
 
 const UserLikes = observer(() =>{
-    const auth = useAuth();
+    const keycloak = useKeycloak();
     const [videos, setVideos] = useState<Video[] | null | undefined>();
 
     useEffect(() =>{
-        if(!auth.isAuthenticated){
+        if(!keycloak.authenticated){
             alert("Should be authorized");
             window.location.href = "/";
-        } else if(auth.user){
-            getUserLikes(auth.user.profile.sub).then(setVideos);
+        } else if(keycloak.subject){
+            getUserLikes(keycloak.subject).then(setVideos);
         }
-    },[auth])
+    },[keycloak])
 
     
     return(
