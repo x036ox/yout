@@ -25,7 +25,7 @@ export const KeycloakProvider = ({ children } : KeycloakProviderProps) => {
     }
 
     keycloak
-      .init({ onLoad: 'check-sso',token: keycloak.token, refreshToken: keycloak.refreshToken, scope: process.env.REACT_APP_OAUTH_SCOPE + " roles", redirectUri: process.env.REACT_APP_OAUTH_REDIRECT_URI})
+      .init({ onLoad: 'check-sso',silentCheckSsoRedirectUri:  window.location.origin + '/silent-check-sso.html', token: keycloak.token, refreshToken: keycloak.refreshToken, scope: process.env.REACT_APP_OAUTH_SCOPE + " roles", redirectUri: process.env.REACT_APP_OAUTH_REDIRECT_URI})
       .then((authenticated) => {
         setKeycloak(keycloak);
         if (authenticated) {
